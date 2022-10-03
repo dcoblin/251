@@ -1,0 +1,40 @@
+Milestone 2
+
+```{r, echo=FALSE}
+library(readxl)
+library(tidyr)
+library(lubridate)
+
+```
+
+```{r}
+MPX_data <- read.csv("~/251/files/euro_mpx_cases.csv")
+```
+
+•	Description of dataset
+o	What is the data source? (1-2 sentences on where the data is coming from, dates included, etc.)
+o	How does the dataset relate to the group problem statement and question?
+
+/newpage
+
+
+•	Import statement
+o	NOTE: Please use datasets available in the PHW251 Project Data github repo Links to an external site. (this is important to make sure everyone is using the same datasets)
+o	Use appropriate import function and package based on the type of file
+o	Utilize function arguments to control relevant components (i.e. change column types, column names, missing values, etc.)
+o	Document the import process
+
+/newpage
+
+•	Identify data types for 5+ data elements/columns/variables
+o	Identify 5+ data elements required for your specified scenario. If <5 elements are required to complete the analysis, please choose additional variables of interest in the data set to explore in this milestone.
+o	Utilize functions or resources in RStudio to determine the types of each data element (i.e. character, numeric, factor)
+o	Identify the desired type/format for each variable—will you need to convert any columns to numeric or another type? 
+
+/newpage
+
+•	Provide a basic description of the 5+ data elements
+o	Numeric: mean, median, range
+o	Character:  unique values/categories
+o	Or any other descriptives that will be useful to the analysis
+
