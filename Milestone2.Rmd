@@ -1,5 +1,9 @@
-Milestone 2
-
+---
+title: "Milestone 2"
+names: "Dawson Coblin & Jose Lazo"
+date: "October 3, 2022"
+output: 
+---
 ```{r, echo=FALSE}
 library(readxl)
 library(tidyr)
@@ -11,18 +15,28 @@ library(lubridate)
 MPX_data <- read.csv("~/251/files/euro_mpx_cases.csv")
 ```
 
-•	Description of dataset
+Description of dataset
+
 o	What is the data source? (1-2 sentences on where the data is coming from, dates included, etc.)
+The monkeypox data file contains information on the number of monkeypox cases reported by EU/EEA countries or collected throughout epidemiologic intelligence at ECDC. 
+Each row contains the corresponding data for a country, day of reporting, number of cases and source of information (data are in long format). The file is updated twice a week. The date range for this data set is from 05/09/22 - 08/23/22
+
 o	How does the dataset relate to the group problem statement and question?
+For our project we are interested in understanding how case rates may differ by region and various demographic factors. The MPX data has information on confirmed cases by countries.
 
 /newpage
-
 
 •	Import statement
 o	NOTE: Please use datasets available in the PHW251 Project Data github repo Links to an external site. (this is important to make sure everyone is using the same datasets)
 o	Use appropriate import function and package based on the type of file
 o	Utilize function arguments to control relevant components (i.e. change column types, column names, missing values, etc.)
 o	Document the import process
+
+Import process
+1) Download zip file from phw251_projectdata
+2) Set up our github repository on our R datahub
+3) One team member uploaded pertinent excel files to their Rproject 251
+4) Commit and push to have excel files on our team's github
 
 /newpage
 
@@ -31,6 +45,10 @@ o	Identify 5+ data elements required for your specified scenario. If <5 elements
 o	Utilize functions or resources in RStudio to determine the types of each data element (i.e. character, numeric, factor)
 o	Identify the desired type/format for each variable—will you need to convert any columns to numeric or another type? 
 
+```{r}
+str(MPX_data)
+mean(MPX_data$ConfCases)
+```
 /newpage
 
 •	Provide a basic description of the 5+ data elements
@@ -38,3 +56,36 @@ o	Numeric: mean, median, range
 o	Character:  unique values/categories
 o	Or any other descriptives that will be useful to the analysis
 
+Confcases is a numeric data element
+```{r}
+round(mean(MPX_data$ConfCases),2)
+median(MPX_data$ConfCases)
+range(MPX_data$ConfCases)
+```
+Mean = 5.72
+Median = 0
+Range = 0,655
+
+DateRep 
+Is a character variable which contains dates 05/09/22 through 08/23/22. We will convert this data into numeric form.
+
+```{r}
+unique(MPX_data$CountryExp)
+```
+
+CountryExp
+Is a character variable which contains 29 countries listed above.
+
+```{r}
+unique(MPX_data$CountryCode)
+```
+
+CountryCode
+Is a character with the 2 letter abbreviation of countries with 29 values which matches with CountryExp
+
+
+```{r}
+unique(MPX_data$Source)
+```
+
+Source is a character variable with 2 options, TESSy and EI
