@@ -50,7 +50,7 @@ library(readxl)
 euro_mpx_cases <- read_csv("files/euro_mpx_cases.csv")
 euro_census_stats <- read_csv("files/euro_census_stats.csv")
 euro_pop_denominators <- read_csv("files/euro_pop_denominators.csv")
-world_country_regions <- read_csv("files/phw251_projectdata-d6f7578ccda8b47b98f4ab30005bbd76acf496ec/world_country_regions.csv")
+world_country_regions <- read_csv("files/world_country_regions.csv")
 ```
 \newpage
 
@@ -204,8 +204,68 @@ visual
 
 ```{r}
 #Upload the Data Dictionary for the central data-frame: "euro_mpx_cases"
-Data_Dictionary <- read_excel("~/PHW251_Fall2022/251/MS3_data_dictionary.xlsx")
-Data_Dictionary
+#Data_Dictionary <- read_excel("~/PHW251_Fall2022/251/MS3_data_dictionary.xlsx")
+#Data_Dictionary
+
+Floor month
+year-MM-DD
+
+EU region (European Region)
+Western Europe
+Eastern Europe
+Western Europe
+Northern Europe
+Souther Europe
+
+Country Code (2 Letter Alpha Country Code)
+AT Austria
+BE Belgium
+BG Bulgaria
+CY Cyprus
+CZ Czechia
+DE Germany
+DK Denmark
+EE Estonia
+EL Greece
+ES Spain
+FI Finland
+FR France
+HR Croatia
+HU Hungary
+IE Ireland
+IS Iceland
+IT Italy
+LT Lithuania
+LU Luxembourg
+LV Latvia
+MT Malta
+NL Netherlands
+NO Norway
+PL Poland
+PT Portugal
+RO Romania
+SE Sweden
+SI Slovenia
+SK Slovakia
+
+total_pop_2022 
+
+cases_grouped monthly (Monkeypox cases per month in each country)
+
+0-1000
+
+1000-9999
+
+10000-99999
+
+100000-199999
+
+200000-499999
+
+500000-999999
+
+GE1000000
+
 
 ```
 
