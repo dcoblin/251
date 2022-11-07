@@ -279,4 +279,16 @@ kable(data_dic,
       caption = "Data Dictionary"
       ) 
 ```
+```{r, include=FALSE}
+euro_mpx_cases %>% 
+  ggplot(., aes(x = EU_region, y = country_pop_2022, fill = EU_region)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  theme_minimal() +
+  labs(title = "Total Population 2022 by Region", x = "", y = "Pop") +
+  theme(axis.title = element_text(size = 14),
+        axis.text = element_text(size = 8),
+        axis.ticks.x = element_blank(),
+        legend.title = element_blank(),
+        legend.position = "none")
+```
 
