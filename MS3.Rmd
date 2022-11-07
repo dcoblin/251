@@ -80,12 +80,13 @@ library(readr)
 library(lubridate)
 library(stringr)
 library(readxl)
+library(kableExtra)
 ```
 ```{r}
 euro_mpx_cases <- read_csv("files/euro_mpx_cases.csv")
 euro_census_stats <- read_csv("files/euro_census_stats.csv")
 euro_pop_denominators <- read_csv("files/euro_pop_denominators.csv")
-world_country_regions <- read_csv("files/phw251_projectdata-d6f7578ccda8b47b98f4ab30005bbd76acf496ec/world_country_regions.csv")
+world_country_regions <- read_csv("files/world_country_regions.csv")
 ```
 \newpage
 
@@ -250,8 +251,32 @@ Table_1
 ## Data Dictionary   
 
 ```{r}
-#Upload the Data Dictionary for the central data-frame: "euro_mpx_cases"
-Data_Dictionary <- read_excel("~/PHW251_Fall2022/251/MS3_data_dictionary.xlsx")
-Data_Dictionary
+#Create the Data Dictionary
+
+names <- names(euro_mpx_cases)
+data_type <- sapply(euro_mpx_cases,class)
+description <- c("Reporting time period with the floor month", #floor_month
+                 "Abbreviation of Country", # CountryCode
+                 "The current population of the country for 2022", # country_pop_2022
+                 "Total confirmed MPX cases grouped by month", # cases_grouped_monthly
+                 "The designated region the country is located", # EU_region
+                 "Sum of the four months per country code", # sum_region_cases
+                 "The Sum of population 0-1000", # 0-1000
+                 "The Sum of population 1000-9999", # 1000-9999
+                 "The Sum of population 10000-99999", # 10000-99999
+                 "The Sum of population 100000-199999", # 100000-199999
+                 "The Sum of population 200000-499999", # 200000-499999
+                 "The Sum of population 500000-999999", # 500000-999999
+                 "The Sum of population GE1000000" # GE1000000
+)
+
+data_dic <- as.data.frame(cbind(names, data_type, description)) %>% 
+  select(-names)
+
+kable(data_dic,
+      col.names = c("Data Type", 
+                    "Description"),
+      caption = "Data Dictionary"
+      ) 
 ```
 
