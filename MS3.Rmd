@@ -207,19 +207,23 @@ visual
 #Data_Dictionary <- read_excel("~/PHW251_Fall2022/251/MS3_data_dictionary.xlsx")
 #Data_Dictionary
 
-Floor month
-year-MM-DD
+```
 
-EU region (European Region)
-Western Europe
-Eastern Europe
-Western Europe
-Northern Europe
-Souther Europe
+|Floor month - Date|
+|:----------------:|
+|year-MM-DD|
+|:----------------:|
+|EU region (European Region)|
+|:----------------:|
+|Western Europe|
+|Eastern Europe|
+|Western Europe|
+|Northern Europe|
+|Souther Europe|
 
-Country Code (2 Letter Alpha Country Code)
-AT Austria
-BE Belgium
+##Country Code (2 Letter Alpha Country Code)
+###AT Austria
+###BE Belgium
 BG Bulgaria
 CY Cyprus
 CZ Czechia
@@ -265,7 +269,4 @@ cases_grouped monthly (Monkeypox cases per month in each country)
 500000-999999
 
 GE1000000
-
-
-```
 
