@@ -3,77 +3,80 @@ title: "Scenario 2 - MPX in the EU"
 author: "Dawson Coblin and Jose Lazo"
 date: '2022-11-07'
 output: pdf_document
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
-# Monkeypox (MPX) Infection Rates in the European Union  
+# Monkeypox (MPX) Infection Rates in the European Union
 
-This report aims to prepare data to analyze and assess the impact of MPV within  
-each country of the EU, and understand how case rates may differ by region and 
-other various demographic factors. These findings will aid the implementation
-and appropriate response to the epidemic to local health departments. 
+This report aims to prepare data to analyze and assess the impact of MPV
+within\
+each country of the EU, and understand how case rates may differ by
+region and other various demographic factors. These findings will aid
+the implementation and appropriate response to the epidemic to local
+health departments.
 
+### Legend of Tasks and Milestones
 
-### Legend of Tasks and Milestones  
+| Milestone   | Description of Section                                           |
+|-----------------------|-------------------------------------------------|
+| Milestone 1 | Group Agreement                                                  |
+| Milestone 2 | Data-set Imported into R; Identify Key Data Elements and Types   |
+| Milestone 3 | Clean Data-set Create Descriptive Statistics and Data Dictionary |
 
-Milestone  | Description of Section
----------- | ----------------------
-Milestone 1|Group Agreement
-Milestone 2|Data-set Imported into R; Identify Key Data Elements and Types
-Milestone 3|Clean Data-set Create Descriptive Statistics and Data Dictionary  
-
-Milestone 3 Sub-sections:  
-1.Sub-setting Rows and Columns as Needed- Clean individual Data Frames  
-2.Summarizing Data and Creating New Vectors, Organize Vectors for Use  
-3.Clean Variables and Combined Data-sets  
+Milestone 3 Sub-sections:\
+1.Sub-setting Rows and Columns as Needed- Clean individual Data Frames\
+2.Summarizing Data and Creating New Vectors, Organize Vectors for Use\
+3.Clean Variables and Combined Data-sets\
 4.Descriptive Stats of EU Data and Data Dictionary
-
 
 \newpage
 
-### 1) Milestone 1: Group Agreement   
+### 1) Milestone 1: Group Agreement
 
- 
-Group R: Team Logistics Agreement  
+Group R: Team Logistics Agreement
 
-9/19/22   
+9/19/22
 
-1.	Project option selection   
+1.  Project option selection
 
-Scenario 2: Monkeypox (MPX) infection rates in the European Union   
+Scenario 2: Monkeypox (MPX) infection rates in the European Union
 
-2.	Create git repository   
+2.  Create git repository
 
-https://github.com/dcoblin/251.git   
+<https://github.com/dcoblin/251.git>
 
-3.	Roles and responsibilities   
+3.  Roles and responsibilities
 
-a.	Team's preferred communication method    
+```{=html}
+<!-- -->
+```
+a.  Team's preferred communication method
 
-WhatsApp   
+WhatsApp
 
-b.	Team's preferred meeting times and frequency   
+b.  Team's preferred meeting times and frequency
 
-Weekends/Post 6 PM on weekdays   
+Weekends/Post 6 PM on weekdays
 
-c.	Team's preferred method for tracking progress   
+c.  Team's preferred method for tracking progress
 
-Google docs   
+Google docs
 
-d.	Point person for contacting course facilitators with questions   
+d.  Point person for contacting course facilitators with questions
 
-Jose/Dawson   
+Jose/Dawson
 
-e.	Point person for submitting all milestones   
+e.  Point person for submitting all milestones
 
 Dawson/Jose
 
-
 \newpage
-### 2) Milestone 2: Data-set Imported into R; Identify Key Data Elements and Types   
 
+### 2) Milestone 2: Data-set Imported into R; Identify Key Data Elements and Types
 
-
-```{r packages}
+```{r packages, include=FALSE}
 library(ggplot2)
 library(tidyverse)
 library(readr)
@@ -82,18 +85,19 @@ library(stringr)
 library(readxl)
 library(kableExtra)
 ```
+
 ```{r}
 euro_mpx_cases <- read_csv("files/euro_mpx_cases.csv")
 euro_census_stats <- read_csv("files/euro_census_stats.csv")
 euro_pop_denominators <- read_csv("files/euro_pop_denominators.csv")
 world_country_regions <- read_csv("files/world_country_regions.csv")
 ```
+
 \newpage
 
-## Milestone 3: 1. Sub-setting Rows and Columns as Needed- Clean individual Data Frames   
+## Milestone 3: 1. Sub-setting Rows and Columns as Needed- Clean individual Data Frames
 
 ### Data Frame Cleaning
-
 
 ```{r}
 #Cleaning the cases df
@@ -113,6 +117,7 @@ euro_pop_denominators <- euro_pop_denominators %>%
 euro_pop_denominators <- euro_pop_denominators[euro_pop_denominators$CountryCode 
                                                %in% euro_country_vector, ]
 
+head(euro_pop_denominators,3)
 
 #Clean census data to include only country code, res_pop. The date for the census 
 #dataframe is 2011, so the date is removed and not relevant.
@@ -133,11 +138,13 @@ euro_census_stats$`100000-199999`[euro_census_stats$`100000-199999` == 0] <- NA
 euro_census_stats$`200000-499999`[euro_census_stats$`200000-499999` == 0] <- NA
 euro_census_stats$`500000-999999`[euro_census_stats$`500000-999999` == 0] <- NA
 euro_census_stats$GE1000000[euro_census_stats$GE1000000 == 0] <- NA
+
+head(euro_census_stats, 3)
 ```
 
 \newpage
 
-## Milestone 3: 2. Summarizing Data and Creating New Vectors, Organize Vectors for Use    
+## Milestone 3: 2. Summarizing Data and Creating New Vectors, Organize Vectors for Use
 
 ```{r}
 #We then assign counties with a region code in a new column a list "EU_region,"
@@ -183,12 +190,12 @@ euro_mpx_cases <- euro_mpx_cases %>%
     CountryCode %in% sr_western_a ~ "Western Asia"
     ))
 
+head(euro_mpx_cases,3)
 ```
 
 \newpage
 
-## Milestone 3: 3. Clean Variables and Combined Data-sets   
-
+## Milestone 3: 3. Clean Variables and Combined Data-sets
 
 ```{r}
 
@@ -217,40 +224,60 @@ euro_mpx_cases<- relocate(euro_mpx_cases, floor_month, CountryCode,
 #Rename the sum of region cases that are confirmed.
 euro_mpx_cases<- euro_mpx_cases %>%
    rename( sum_region_cases = `sum(cases_grouped_monthly)`)
+
+head(euro_mpx_cases,3)
 ```
 
 \newpage
 
-## Milestone 3: 4. Descriptive Stats of EU Data and Data Dictionary   
-
+## Milestone 3: 4. Descriptive Stats of EU Data and Data Dictionary
 
 ### Descriptive stats:
-We find that the census information for 7 of the 29 countries in the EU are not
-available. These "0" values were replaced with "NA" to prevent graphing issues.
+
+We find that the census information for 7 of the 29 countries in the EU
+are not available. These "0" values were replaced with "NA" to prevent
+graphing issues.
 
 ### Region Data:
-We see that the regions in EU include various numbers of countries, thus having 
-unequal populations. A useful metric to create a graph will be the calculation 
-of cases per 100,000. This will allow us to use 1 categorical variable (EU Region)
-to a quantitative variable (number of confirmed cases)   
 
-We compiled the relevant confirmed case information per region in the EU.   
+We see that the regions in EU include various numbers of countries, thus
+having unequal populations. A useful metric to create a graph will be
+the calculation of cases per 100,000. This will allow us to use 1
+categorical variable (EU Region) to a quantitative variable (number of
+confirmed cases)
+
+We compiled the relevant confirmed case information per region in the
+EU.
 
 ### The pertinent information per EU region is listed below:
-```{r echo=FALSE}
-Table_1 <- tibble(
-  EU_Region = c("Eastern Europe", "Northern Europe", "Southern Europe",
-               "Western Asia", "Western Europe" ),  
-  Countries_per_Region = c(6, 9, 7, 1, 6),
-  Total_Region_Pop = c(89171711, 37518701,133879004, 904705, 190251495),
-  Total_cases_per_region = c( 217, 619, 7958, 4, 8214)
-  )
 
-Table_1
+```{r, include=FALSE}
+
+Table_1.1 <- euro_mpx_cases %>% group_by(EU_region, country_pop_2022, sum_region_cases) %>%
+  count(CountryCode) %>%
+  select(CountryCode,EU_region,country_pop_2022,sum_region_cases) %>%
+  ungroup() %>%
+  group_by(EU_region, sum_region_cases) %>%
+  summarize(Total_region_pop = sum(country_pop_2022))
+Countries_per_Region = c(6, 9, 7, 1, 6)
+Table_1.1 <- as.data.frame(cbind(Table_1.1, Countries_per_Region))
 ```
-## Data Dictionary   
 
-```{r}
+```{r, echo=FALSE}
+kable(Table_1.1,
+      col.names = c("EU Region", 
+                    "Total Cases Per Region",
+                    "Total Region Population",
+                    "Countries Per Region"),
+      caption = "Monkeypox Cases Per Region"
+      ) %>%
+  kable_styling(latex_options = "HOLD_position")
+
+```
+
+## Data Dictionary
+
+```{r, echo=FALSE}
 #Create the Data Dictionary
 
 names <- names(euro_mpx_cases)
@@ -277,18 +304,19 @@ kable(data_dic,
       col.names = c("Data Type", 
                     "Description"),
       caption = "Data Dictionary"
-      ) 
+      ) %>%
+  kable_styling(latex_options = "HOLD_position")
 ```
+
 ```{r, include=FALSE}
-euro_mpx_cases %>% 
-  ggplot(., aes(x = EU_region, y = country_pop_2022, fill = EU_region)) +
-  geom_bar(stat = "identity", position = position_dodge()) +
-  theme_minimal() +
-  labs(title = "Total Population 2022 by Region", x = "", y = "Pop") +
-  theme(axis.title = element_text(size = 14),
-        axis.text = element_text(size = 8),
-        axis.ticks.x = element_blank(),
-        legend.title = element_blank(),
-        legend.position = "none")
+#euro_mpx_cases %>% 
+#  ggplot(., aes(x = EU_region, y = country_pop_2022, fill = EU_region)) +
+#  geom_bar(stat = "identity", position = position_dodge()) +
+#  theme_minimal() +
+#  labs(title = "Total Population 2022 by Region", x = "", y = "Pop") +
+#  theme(axis.title = element_text(size = 14),
+#        axis.text = element_text(size = 8),
+#        axis.ticks.x = element_blank(),
+#        legend.title = element_blank(),
+#        legend.position = "none")
 ```
-TEST
