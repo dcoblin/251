@@ -32,6 +32,41 @@ Milestone 3 Sub-sections:
 
 ### 1) Milestone 1: Group Agreement   
 
+ 
+Group R: Team Logistics Agreement  
+
+9/19/22   
+
+1.	Project option selection   
+
+Scenario 2: Monkeypox (MPX) infection rates in the European Union   
+
+2.	Create git repository   
+
+https://github.com/dcoblin/251.git   
+
+3.	Roles and responsibilities   
+
+a.	Team's preferred communication method    
+
+WhatsApp   
+
+b.	Team's preferred meeting times and frequency   
+
+Weekends/Post 6 PM on weekdays   
+
+c.	Team's preferred method for tracking progress   
+
+Google docs   
+
+d.	Point person for contacting course facilitators with questions   
+
+Jose/Dawson   
+
+e.	Point person for submitting all milestones   
+
+Dawson/Jose
+
 
 \newpage
 ### 2) Milestone 2: Data-set Imported into R; Identify Key Data Elements and Types   
@@ -50,13 +85,13 @@ library(readxl)
 euro_mpx_cases <- read_csv("files/euro_mpx_cases.csv")
 euro_census_stats <- read_csv("files/euro_census_stats.csv")
 euro_pop_denominators <- read_csv("files/euro_pop_denominators.csv")
-world_country_regions <- read_csv("files/world_country_regions.csv")
+world_country_regions <- read_csv("files/phw251_projectdata-d6f7578ccda8b47b98f4ab30005bbd76acf496ec/world_country_regions.csv")
 ```
 \newpage
 
-### Milestone 3: 1. Sub-setting Rows and Columns as Needed- Clean individual Data Frames   
+## Milestone 3: 1. Sub-setting Rows and Columns as Needed- Clean individual Data Frames   
 
-Data Frame Cleaning
+### Data Frame Cleaning
 
 
 ```{r}
@@ -71,8 +106,8 @@ euro_country_vector <- unique(euro_mpx_cases$CountryCode)
 #Cleaning the denominators df
 euro_pop_denominators <- euro_pop_denominators %>% 
   filter( TIME_PERIOD == 2022) %>%
-  rename( CountryCode = geo , total_pop_2022 = 'OBS_VALUE') %>%
-  select( CountryCode, total_pop_2022)
+  rename( CountryCode = geo , country_pop_2022 = 'OBS_VALUE') %>%
+  select( CountryCode, country_pop_2022)
 
 euro_pop_denominators <- euro_pop_denominators[euro_pop_denominators$CountryCode 
                                                %in% euro_country_vector, ]
@@ -101,7 +136,7 @@ euro_census_stats$GE1000000[euro_census_stats$GE1000000 == 0] <- NA
 
 \newpage
 
-### Milestone 3: 2. Summarizing Data and Creating New Vectors, Organize Vectors for Use    
+## Milestone 3: 2. Summarizing Data and Creating New Vectors, Organize Vectors for Use    
 
 ```{r}
 #We then assign counties with a region code in a new column a list "EU_region,"
@@ -146,64 +181,77 @@ euro_mpx_cases <- euro_mpx_cases %>%
     CountryCode %in% sr_western_e ~ "Western Europe",
     CountryCode %in% sr_western_a ~ "Western Asia"
     ))
+
 ```
 
 \newpage
 
-### Milestone 3: 3. Clean Variables and Combined Data-sets   
+## Milestone 3: 3. Clean Variables and Combined Data-sets   
 
 
 ```{r}
-
-#Combined the denominations data for 2022 pop with euro_mpx_cases dataset
 
 euro_mpx_cases <-  inner_join( euro_pop_denominators, euro_mpx_cases, 
                                 by= "CountryCode")
-#Join census data
+#Join census data.
 euro_mpx_cases <- inner_join(euro_census_stats, euro_mpx_cases,
                               by= "CountryCode")
-#Rearrange column order
-euro_mpx_cases <- relocate(euro_mpx_cases, floor_month, EU_region, 
-                          total_pop_2022 , cases_grouped_monthly, 
+#Rearrange column order.
+euro_mpx_cases <- relocate(euro_mpx_cases, EU_region, floor_month, 
+                          country_pop_2022 , cases_grouped_monthly, 
                           .before = CountryCode)
 
-euro_mpx_cases<- relocate(euro_mpx_cases, CountryCode, .before = total_pop_2022)
+#Combined the denominations data for 2022 pop with euro_mpx_cases dataset.
+sum_region_cases <- euro_mpx_cases %>% group_by(EU_region) %>%
+  summarise(sum(cases_grouped_monthly))
 
+#Join the numeric sums into the main dataframe.
+euro_mpx_cases <- inner_join(sum_region_cases, euro_mpx_cases,
+                              by= "EU_region")
+
+#Relocate the columns to a adjust fluidity of the data.
+euro_mpx_cases<- relocate(euro_mpx_cases, floor_month, CountryCode, 
+                          country_pop_2022, cases_grouped_monthly, 
+                          .before = EU_region)
+#Rename the sum of region cases that are confirmed.
+euro_mpx_cases<- euro_mpx_cases %>%
+   rename( sum_region_cases = `sum(cases_grouped_monthly)`)
 ```
 
 \newpage
 
-### Milestone 3: 4. Descriptive Stats of EU Data and Data Dictionary   
+## Milestone 3: 4. Descriptive Stats of EU Data and Data Dictionary   
 
 
-Descriptive stats:
+### Descriptive stats:
 We find that the census information for 7 of the 29 countries in the EU are not
 available. These "0" values were replaced with "NA" to prevent graphing issues.
 
-Region Data:
-We see that the regions in EU include various numbers of countries, thus having unequal
-populations.   
+### Region Data:
+We see that the regions in EU include various numbers of countries, thus having 
+unequal populations. A useful metric to create a graph will be the calculation 
+of cases per 100,000. This will allow us to use 1 categorical variable (EU Region)
+to a quantitative variable (number of confirmed cases)   
 
-"Eastern Europe" : 6 countries, total region population = 89171711   
-"Northern Europe": 9 countries, total region population = 37518701   
-"Southern Europe": 7 countries, total region population = 133879004   
-"Western Asia"   : 1 countries, total region population = 904705   
-"Western Europe" : 6 countries, total region population = 190251495   
+We compiled the relevant confirmed case information per region in the EU.   
 
+### The pertinent information per EU region is listed below:
+```{r echo=FALSE}
+Table_1 <- tibble(
+  EU_Region = c("Eastern Europe", "Northern Europe", "Southern Europe",
+               "Western Asia", "Western Europe" ),  
+  Countries_per_Region = c(6, 9, 7, 1, 6),
+  Total_Region_Pop = c(89171711, 37518701,133879004, 904705, 190251495),
+  Total_cases_per_region = c( 217, 619, 7958, 4, 8214)
+  )
 
-
-```{r}
-
-visual <- ggplot(data = euro_mpx_cases, 
-                 aes(x = EU_region , y = cases_grouped_monthly))+ 
-  theme_minimal(base_size = 15)
-
-visual
-
+Table_1
 ```
+## Data Dictionary   
 
 ```{r}
 #Upload the Data Dictionary for the central data-frame: "euro_mpx_cases"
+<<<<<<< HEAD
 #Data_Dictionary <- read_excel("~/PHW251_Fall2022/251/MS3_data_dictionary.xlsx")
 #Data_Dictionary
 
@@ -270,3 +318,9 @@ cases_grouped monthly (Monkeypox cases per month in each country)
 
 GE1000000
 
+=======
+Data_Dictionary <- read_excel("~/PHW251_Fall2022/251/MS3_data_dictionary.xlsx")
+Data_Dictionary
+```
+
+>>>>>>> c2f66a1d6d61a74e26ec0459f858db17fbfd1abf
