@@ -1,7 +1,7 @@
 ---
 title: "Scenario 2 - MPX in the EU"
 author: "Dawson Coblin and Jose Lazo"
-date: '2022-11-07'
+date: '2022-11-21'
 output: pdf_document
 editor_options: 
   markdown: 
@@ -24,6 +24,7 @@ health departments.
 | Milestone 1 | Group Agreement                                                  |
 | Milestone 2 | Data-set Imported into R; Identify Key Data Elements and Types   |
 | Milestone 3 | Clean Data-set Create Descriptive Statistics and Data Dictionary |
+| Milestone 4 | Data Visualization                                               |
 
 Milestone 3 Sub-sections:\
 1.Sub-setting Rows and Columns as Needed- Clean individual Data Frames\
@@ -308,15 +309,57 @@ kable(data_dic,
   kable_styling(latex_options = "HOLD_position")
 ```
 
-```{r, include=FALSE}
-#euro_mpx_cases %>% 
-#  ggplot(., aes(x = EU_region, y = country_pop_2022, fill = EU_region)) +
-#  geom_bar(stat = "identity", position = position_dodge()) +
-#  theme_minimal() +
-#  labs(title = "Total Population 2022 by Region", x = "", y = "Pop") +
-#  theme(axis.title = element_text(size = 14),
-#        axis.text = element_text(size = 8),
-#        axis.ticks.x = element_blank(),
-#        legend.title = element_blank(),
-#        legend.position = "none")
+\newpage
+
+### Milestone 4: Visualizations
+
+
+```{r}
+euro_mpx_cases %>% 
+  ggplot(., aes(x = floor_month, y = cases_grouped_monthly)) +
+  geom_bar(aes(fill = EU_region), stat = "identity") +
+  theme_minimal() +
+  labs(title = "Monthly Cases of Monkeypox in Europe", x = "Month (2022)", 
+       y = "Monkeypox Cases") +
+  theme(axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8),
+        axis.ticks.x = element_blank(),
+        plot.title = element_text(size = 14),
+        legend.title = element_blank()) 
 ```
+
+### Bar Graph
+In the bar graph above we see the breakdown of monthly Monkeypox infections in Europe between May and August of this year. The majority of cases occured in Western Europe and Southern Europe as evidenced by the respectively colored purple and green regions in the bar graph. Over the course of 4 months, the total number of Monkeypox cases by region were Western Asia = 4, Eastern Europe = 277, Northern Europe = 619, Southern Europe = 7958, and Western Europe = 8214
+
+\newpage
+
+```{r}
+euro_mpx_cases <- inner_join(euro_mpx_cases, Table_1.1, by= "EU_region") %>%
+  group_by(floor_month) %>%
+  mutate(Total_Euro_cases_monthly = sum(cases_grouped_monthly)) %>%
+  mutate(Total_euro_pop = sum(country_pop_2022)) 
+
+graph1 <- euro_mpx_cases %>%
+  select(floor_month, cases_grouped_monthly, EU_region, sum_region_cases.x, Total_region_pop,
+         Total_Euro_cases_monthly, Total_euro_pop) %>%
+  group_by(floor_month, EU_region) %>%
+  mutate(region_monthly_cases = sum(cases_grouped_monthly)) %>% ungroup() %>%
+  mutate("monthly_rate_region" = round((region_monthly_cases/Total_region_pop * 100000),2))
+
+ggplot(data=graph1, aes(x=floor_month, y=monthly_rate_region, group= EU_region)) +
+  geom_line(aes(color=EU_region)) +
+  geom_point() +
+  geom_label(label= graph1$monthly_rate_region, nudge_y = 0.1) +
+  theme_minimal() +
+  labs(title = "Rate of Monkeypox Infections", x = "Month (2022)", 
+       y = "Monkeypox Rate (per 100k)") +
+    theme(axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8),
+        axis.ticks.x = element_blank(),
+        plot.title = element_text(size = 14),
+        legend.title = element_blank()) 
+```
+
+### Line Plot
+As a follow up to the bar graph above, we wanted to look at the rate of Monkeypox infections per region. In the bar graph above, Western Europe had the greatest number of Monkeypox infections however when we look at the rate of infections, we see that over the course of the 4 months, Southern Europe had the greatest rate of infection with a peak of 2.84 monkeypox cases per 100,000 people in the month of July.
+
