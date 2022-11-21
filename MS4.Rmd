@@ -319,13 +319,16 @@ euro_mpx_cases %>%
   ggplot(., aes(x = floor_month, y = cases_grouped_monthly)) +
   geom_bar(aes(fill = EU_region), stat = "identity") +
   theme_minimal() +
-  labs(title = "Monthly Cases of Monkeypox in Europe", x = "Month (2022)", 
+  labs(title = "Monthly Cases of Monkeypox in Europe", 
+       tag = "Figure 1",
+       x = "Month (2022)", 
        y = "Monkeypox Cases") +
   theme(axis.title = element_text(size = 10),
         axis.text = element_text(size = 8),
         axis.ticks.x = element_blank(),
         plot.title = element_text(size = 14),
-        legend.title = element_blank()) 
+        legend.title = element_blank(),
+        plot.tag.position = "bottomleft") 
 ```
 
 ### Bar Graph
@@ -351,13 +354,16 @@ ggplot(data=graph1, aes(x=floor_month, y=monthly_rate_region, group= EU_region))
   geom_point() +
   geom_label(label= graph1$monthly_rate_region, nudge_y = 0.1) +
   theme_minimal() +
-  labs(title = "Rate of Monkeypox Infections", x = "Month (2022)", 
+  labs(title = "Rate of Monkeypox Infections", 
+       tag = "Figure 2",
+       x = "Month (2022)", 
        y = "Monkeypox Rate (per 100k)") +
     theme(axis.title = element_text(size = 10),
         axis.text = element_text(size = 8),
         axis.ticks.x = element_blank(),
         plot.title = element_text(size = 14),
-        legend.title = element_blank()) 
+        legend.title = element_blank(),
+        plot.tag.position = "bottomleft") 
 ```
 
 ### Line Plot
