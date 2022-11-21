@@ -1,0 +1,70 @@
+---
+title: "MPX Example"
+output: html_notebook
+---
+
+## Ecological analysis using census data
+
+This is an example of creating a metric from the census data relating to percent of population within a country/region residing in small cities
+
+You'll probably need to change the join datasets to match the name and the join by columns that you have set up.  But hopefully this enough to give you an idea.
+
+```{r recode_metric, echo=TRUE, message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+library(magrittr)
+library(stringr)
+library(tidyr)
+library(purrr)
+library(lubridate)
+library(plotly)
+
+euro_census <- read_csv("https://raw.githubusercontent.com/PHW290/phw251_projectdata/main/euro_census_stats_mod.csv") %>%
+  rename_all(. %>% tolower() %>% gsub(" |-|/", "_", .)) 
+
+mpx_cases <- read_csv("https://raw.githubusercontent.com/PHW290/phw251_projectdata/main/euro_mpx_cases_mod.csv") %>%
+  rename_all(. %>% tolower() %>% gsub(" |-|/", "_", .)) %>%
+  mutate(month = floor_date(daterep, "month")) %>%
+  select(-source, daterep, countryexp, country_code = countrycode, confcases, month)
+
+# collapsing the res_pop into three categories, determining the % of pop in each category for each country
+# then categorizing each country into a 3-level metric
+
+census_metric <- euro_census%>%
+  mutate(res_size_cat = case_when(res_pop %in% c("0-1000", "1000-9999", "10000-99999") ~ "small",
+                                  res_pop %in% c("100000-499999") ~ "medium",
+                                  res_pop %in% c("500000-999999", "GE1000000") ~ "large",
+                                  TRUE ~ "unknown")
+         ) %>%
+  group_by(country_code, res_size_cat) %>%
+  summarize(group_pop = sum(pop, na.rm = T)) %>%
+  mutate(country_pop = sum(group_pop, na.rm = T),
+         group_pct = group_pop / country_pop) %>%
+  ungroup() %>%
+  filter(res_size_cat == "small") %>%
+  mutate(pct_small = case_when(group_pct >= 0.80 ~ "Greater than 80% in Small Cities",
+                                group_pct >= 0.65 ~ "Between 65% and 80% in Small Cities",
+                                group_pct < 0.65 ~ "Less than 65% in Small Cities"))
+
+# merging the demographic metric and population data set with case counts and calculating rates by cat and month
+
+res_size <- mpx_cases %>%
+  group_by(country_code, month) %>%
+  summarize(cases_by_month = sum(confcases, na.rm = T)) %>%
+  left_join(., census_metric, by="country_code") %>%
+  group_by(pct_small, month) %>%
+  summarize(cases_by_monthcat = sum(cases_by_month, na.rm = T),
+            cat_pop = max(country_pop, na.rm = T)) %>%
+  mutate(size_cat_rate = (cases_by_monthcat / cat_pop) * 1000000) %>%
+  ungroup()
+  
+fig <- plot_ly(res_size, x = ~month, y = ~size_cat_rate, type = 'scatter', mode = 'lines', linetype = ~pct_small) %>%
+  layout(
+    title = 'MPX Case Rates in Europe by Percent of Population Living in Small Cities, May-August 2022',
+    xaxis = list(title = '', dtick = "M1", tickformat="%b<br>%Y"),
+    yaxis = list(title = 'Case Rates per 1M population'),
+    legend=list(orientation = 'h')
+  )
+
+fig
+```
