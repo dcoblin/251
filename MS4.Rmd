@@ -315,44 +315,45 @@ kable(data_dic,
 
 ### Milestone 4: Visualizations
 
-### Table 1.2
-```{r Table Visualization}
-table_1.2df <- euro_mpx_cases %>% select( EU_region, "0-1000", "1000-9999",
-                                          "10000-99999", "100000-199999",
-                                          "200000-499999" , "500000-999999",
-                                          "GE1000000")
-table_1.2df1<- pivot_longer(table_1.2df, cols =  3:9, names_to = "city_pop",
-                            values_to = "counts" ) 
 
-#I believe the issue is with the formation of the information below
-table_1.2df2 <- table_1.2df1 %>% 
-  group_by(EU_region, city_pop) %>% 
-  summarize(count = sum(counts))
+```{r}
+table_1.2df <- euro_mpx_cases %>% select( EU_region, "0-1000", "1000-9999", 
+                                          "10000-99999", "100000-199999", 
+                                          "200000-499999" , "500000-999999", 
+                                          "GE1000000") 
+table_1.2df1<- pivot_longer(table_1.2df, cols = 3:9, names_to = "city_pop", 
+                            values_to = "counts" )
 
+#I believe the issue is with the formation of the information below table_1.2df2 <- table_1.2df1 %>% group_by(EU_region, city_pop) %>% summarize(count = sum(counts))
 
-table_1.2 <- table_1.2df1 %>%
-  tabyl(city_pop, EU_region)
+table_1.2 <- table_1.2df1 %>% tabyl(city_pop, EU_region)
 
+table_1.2
 ```
 
 
 
+
+### Table 1.2
 ```{r}
 euro_mpx_cases %>% 
   ggplot(., aes(x = floor_month, y = cases_grouped_monthly)) +
   geom_bar(aes(fill = EU_region), stat = "identity") +
   theme_minimal() +
-  labs(title = "Figure 1: Monthly Cases of Monkeypox in Europe", x = "Month (2022)", 
+  labs(title = "Monthly Cases of Monkeypox in Europe", 
+       tag = "Figure 1",
+       x = "Month (2022)", 
        y = "Monkeypox Cases") +
   theme(axis.title = element_text(size = 10),
         axis.text = element_text(size = 8),
         axis.ticks.x = element_blank(),
         plot.title = element_text(size = 14),
-        legend.title = element_blank()) 
+        legend.title = element_blank(),
+        plot.tag.position = "bottomleft") 
 ```
 
-### Figure 1
-In the bar graph above we see the breakdown of monthly Monkeypox infections in Europe between May and August of this year. The majority of cases occurred in Western Europe and Southern Europe as evidenced by the respectively colored purple and green regions in the bar graph. Over the course of 4 months, the total number of Monkeypox cases by region were Western Asia = 4, Eastern Europe = 277, Northern Europe = 619, Southern Europe = 7958, and Western Europe = 8214
+### Bar Graph
+In the bar graph (fig. 1) above we see the breakdown of monthly Monkeypox infections in Europe between May and August of this year. The majority of cases occured in Western Europe and Southern Europe as evidenced by the respectively colored purple and green regions in the bar graph. Over the course of 4 months, the total number of Monkeypox cases by region were Western Asia = 4, Eastern Europe = 277, Northern Europe = 619, Southern Europe = 7958, and Western Europe = 8214
 
 \newpage
 
@@ -361,28 +362,28 @@ euro_mpx_cases <- inner_join(euro_mpx_cases, Table_1.1, by= "EU_region") %>%
   group_by(floor_month) %>%
   mutate(Total_Euro_cases_monthly = sum(cases_grouped_monthly)) %>%
   mutate(Total_euro_pop = sum(country_pop_2022)) 
-
 graph1 <- euro_mpx_cases %>%
   select(floor_month, cases_grouped_monthly, EU_region, sum_region_cases.x, Total_region_pop,
          Total_Euro_cases_monthly, Total_euro_pop) %>%
   group_by(floor_month, EU_region) %>%
   mutate(region_monthly_cases = sum(cases_grouped_monthly)) %>% ungroup() %>%
   mutate("monthly_rate_region" = round((region_monthly_cases/Total_region_pop * 100000),2))
-
 ggplot(data=graph1, aes(x=floor_month, y=monthly_rate_region, group= EU_region)) +
   geom_line(aes(color=EU_region)) +
   geom_point() +
   geom_label(label= graph1$monthly_rate_region, nudge_y = 0.1) +
   theme_minimal() +
-  labs(title = "Figure 2: Rate of Monkeypox Infections", x = "Month (2022)", 
+  labs(title = "Rate of Monkeypox Infections", 
+       tag = "Figure 2",
+       x = "Month (2022)", 
        y = "Monkeypox Rate (per 100k)") +
     theme(axis.title = element_text(size = 10),
         axis.text = element_text(size = 8),
         axis.ticks.x = element_blank(),
         plot.title = element_text(size = 14),
-        legend.title = element_blank()) 
+        legend.title = element_blank(),
+        plot.tag.position = "bottomleft") 
 ```
 
-### Figure 2
-Following the graph from Figure 1, we wanted to look at the rate of Monkeypox infections per region. In the bar graph above, Western Europe had the greatest number of Monkeypox infections however when we look at the rate of infections, we see that over the course of the 4 months, Southern Europe had the greatest rate of infection with a peak of 2.84 monkeypox cases per 100,000 people in the month of July.
-
+### Line Plot
+As a follow up to the bar graph (fig. 1) above, we wanted to look at the rate of Monkeypox infections per region. In the bar graph above, Western Europe had the greatest number of Monkeypox infections however when we look at the rate of infections (fig. 2), we see that over the course of the 4 months, Southern Europe had the greatest rate of infection with a peak of 2.84 monkeypox cases per 100,000 people in the month of July.
