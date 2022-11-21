@@ -85,6 +85,8 @@ library(lubridate)
 library(stringr)
 library(readxl)
 library(kableExtra)
+library(janitor)
+
 ```
 
 ```{r}
@@ -313,13 +315,34 @@ kable(data_dic,
 
 ### Milestone 4: Visualizations
 
+### Table 1.2
+```{r Table Visualization}
+table_1.2df <- euro_mpx_cases %>% select( EU_region, "0-1000", "1000-9999",
+                                          "10000-99999", "100000-199999",
+                                          "200000-499999" , "500000-999999",
+                                          "GE1000000")
+table_1.2df1<- pivot_longer(table_1.2df, cols =  3:9, names_to = "city_pop",
+                            values_to = "counts" ) 
+
+#I believe the issue is with the formation of the information below
+table_1.2df2 <- table_1.2df1 %>% 
+  group_by(EU_region, city_pop) %>% 
+  summarize(count = sum(counts))
+
+
+table_1.2 <- table_1.2df1 %>%
+  tabyl(city_pop, EU_region)
+
+```
+
+
 
 ```{r}
 euro_mpx_cases %>% 
   ggplot(., aes(x = floor_month, y = cases_grouped_monthly)) +
   geom_bar(aes(fill = EU_region), stat = "identity") +
   theme_minimal() +
-  labs(title = "Monthly Cases of Monkeypox in Europe", x = "Month (2022)", 
+  labs(title = "Figure 1: Monthly Cases of Monkeypox in Europe", x = "Month (2022)", 
        y = "Monkeypox Cases") +
   theme(axis.title = element_text(size = 10),
         axis.text = element_text(size = 8),
@@ -328,8 +351,8 @@ euro_mpx_cases %>%
         legend.title = element_blank()) 
 ```
 
-### Bar Graph
-In the bar graph above we see the breakdown of monthly Monkeypox infections in Europe between May and August of this year. The majority of cases occured in Western Europe and Southern Europe as evidenced by the respectively colored purple and green regions in the bar graph. Over the course of 4 months, the total number of Monkeypox cases by region were Western Asia = 4, Eastern Europe = 277, Northern Europe = 619, Southern Europe = 7958, and Western Europe = 8214
+### Figure 1
+In the bar graph above we see the breakdown of monthly Monkeypox infections in Europe between May and August of this year. The majority of cases occurred in Western Europe and Southern Europe as evidenced by the respectively colored purple and green regions in the bar graph. Over the course of 4 months, the total number of Monkeypox cases by region were Western Asia = 4, Eastern Europe = 277, Northern Europe = 619, Southern Europe = 7958, and Western Europe = 8214
 
 \newpage
 
@@ -351,7 +374,7 @@ ggplot(data=graph1, aes(x=floor_month, y=monthly_rate_region, group= EU_region))
   geom_point() +
   geom_label(label= graph1$monthly_rate_region, nudge_y = 0.1) +
   theme_minimal() +
-  labs(title = "Rate of Monkeypox Infections", x = "Month (2022)", 
+  labs(title = "Figure 2: Rate of Monkeypox Infections", x = "Month (2022)", 
        y = "Monkeypox Rate (per 100k)") +
     theme(axis.title = element_text(size = 10),
         axis.text = element_text(size = 8),
@@ -360,6 +383,6 @@ ggplot(data=graph1, aes(x=floor_month, y=monthly_rate_region, group= EU_region))
         legend.title = element_blank()) 
 ```
 
-### Line Plot
-As a follow up to the bar graph above, we wanted to look at the rate of Monkeypox infections per region. In the bar graph above, Western Europe had the greatest number of Monkeypox infections however when we look at the rate of infections, we see that over the course of the 4 months, Southern Europe had the greatest rate of infection with a peak of 2.84 monkeypox cases per 100,000 people in the month of July.
+### Figure 2
+Following the graph from Figure 1, we wanted to look at the rate of Monkeypox infections per region. In the bar graph above, Western Europe had the greatest number of Monkeypox infections however when we look at the rate of infections, we see that over the course of the 4 months, Southern Europe had the greatest rate of infection with a peak of 2.84 monkeypox cases per 100,000 people in the month of July.
 
