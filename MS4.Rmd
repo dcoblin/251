@@ -311,30 +311,89 @@ kable(data_dic,
   kable_styling(latex_options = "HOLD_position")
 ```
 
+
 \newpage
 
 ### Milestone 4: Visualizations
 
 
 ```{r}
-#table_1.2df <- euro_mpx_cases %>% select( EU_region, "0-1000", "1000-9999", 
-#                                          "10000-99999", "100000-199999", 
-#                                          "200000-499999" , "500000-999999", 
-#                                          "GE1000000") 
-#table_1.2df1<- pivot_longer(table_1.2df, cols = 3:9, names_to = "city_pop", 
-#                            values_to = "counts" )
+euro_census_stats1 <- read_csv("files/euro_census_stats.csv")
 
-#I believe the issue is with the formation of the information below table_1.2df2 <- table_1.2df1 %>% group_by(EU_region, city_pop) %>% summarize(count = sum(counts))
+#pop density calc
+euro_census_stats2 <- euro_census_stats1 %>%
+  group_by(COUNTRY_CODE, RES_POP) %>%
+  summarise(census_pop = sum(pop)) %>%
+  rename(CountryCode = COUNTRY_CODE) %>% 
+  mutate(EU_region = case_when(
+    CountryCode %in% sr_eastern_e ~ "Eastern Europe",
+    CountryCode %in% sr_northern_e ~ "Northern Europe",
+    CountryCode %in% sr_southern_e ~ "Southern Europe",
+    CountryCode %in% sr_western_e ~ "Western Europe",
+    CountryCode %in% sr_western_a ~ "Western Asia"
+    )) 
 
-#table_1.2 <- table_1.2df1 %>% tabyl(city_pop, EU_region)
+euro_census_stats2a <- euro_census_stats2 %>%
+  group_by(EU_region, RES_POP) %>%
+  summarize(pop_density_count = sum(census_pop)) %>%
+  na.omit()
 
-#table_1.2
+Table_2a <- pivot_wider(euro_census_stats2a,
+            names_from = EU_region,
+            values_from = pop_density_count)
+
+kable(Table_2a,
+      col.names = c("Population Density", "Eastern Europe", "Northern Europe",
+                    "Southern Europe","Western Asia","Western Europe"),
+      caption = "Population Demographic (Population Density) per Region") %>%
+  kable_styling(latex_options = "HOLD_position")
+
+
+```
+## Table 4
+
+Table 4 illustrates the density within each region of the EU by the population density gathered by count for where an individual lives. 
+
+\newpage
+
+```{r}
+
+#Age calc
+euro_census_stats2b <- euro_census_stats1 %>%
+  group_by(COUNTRY_CODE, AGE) %>%
+  summarise(census_pop = sum(pop)) %>%
+  rename(CountryCode = COUNTRY_CODE) %>% 
+  mutate(EU_region = case_when(
+    CountryCode %in% sr_eastern_e ~ "Eastern Europe",
+    CountryCode %in% sr_northern_e ~ "Northern Europe",
+    CountryCode %in% sr_southern_e ~ "Southern Europe",
+    CountryCode %in% sr_western_e ~ "Western Europe",
+    CountryCode %in% sr_western_a ~ "Western Asia"
+    ))
+
+euro_census_stats2b <- euro_census_stats2b %>%
+  group_by(EU_region, AGE) %>%
+  summarize(pop_density_count = sum(census_pop)) %>%
+  na.omit()
+
+Table_2b <- pivot_wider(euro_census_stats2b,
+            names_from = EU_region,
+            values_from = pop_density_count)
+
+kable(Table_2b,
+      col.names = c("Age Group", "Eastern Europe", "Northern Europe",
+                    "Southern Europe","Western Asia","Western Europe"),
+      caption = "Age Groups (Age Density) per Region") %>%
+  kable_styling(latex_options = "HOLD_position")
 ```
 
 
+## Table 5
 
+Table 5 summarizes the region demographics by age using census data. We can see the age variance from region to region within the EU.
 
-### Table 1.2
+\newpage
+
 ```{r}
 euro_mpx_cases %>% 
   ggplot(., aes(x = floor_month, y = cases_grouped_monthly)) +
