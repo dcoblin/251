@@ -85,6 +85,8 @@ library(lubridate)
 library(stringr)
 library(readxl)
 library(kableExtra)
+library(janitor)
+library(DT)
 ```
 
 ```{r}
@@ -368,4 +370,76 @@ ggplot(data=graph1, aes(x=floor_month, y=monthly_rate_region, group= EU_region))
 
 ### Line Plot
 As a follow up to the bar graph (fig. 1) above, we wanted to look at the rate of Monkeypox infections per region. In the bar graph above, Western Europe had the greatest number of Monkeypox infections however when we look at the rate of infections (fig. 2), we see that over the course of the 4 months, Southern Europe had the greatest rate of infection with a peak of 2.84 monkeypox cases per 100,000 people in the month of July.
+
+\newpage
+
+```{r}
+euro_census_stats2 <- read_csv("files/euro_census_stats.csv")
+euro_census_stats2 <- euro_census_stats2 %>%
+  mutate(AGE = case_when(AGE %in% c("Y_LT15") ~ "Age < 15",
+                                  AGE %in% c("Y15-29") ~ "Age 15-29",
+                                  AGE %in% c("Y30-49") ~ "Age 30-49",
+                                  AGE %in% c("Y50-64") ~ "Age 50-64",
+                                  AGE %in% c("Y65-84") ~ "Age 65-84",
+                                  AGE %in% c("Y_GE85") ~ "Age 85 and Older")) %>%
+  filter(pop > 0) %>%
+  select(COUNTRY_CODE, SEX, AGE, pop) %>%
+  ungroup() %>%
+  group_by(COUNTRY_CODE, SEX, AGE) %>%
+  summarise("age_category_count" = sum(pop)) %>%
+  ungroup() %>%
+  group_by(COUNTRY_CODE) %>%
+  mutate(total_pop = sum(age_category_count)) %>% ungroup()
+
+euro_mpx_cases2 <- read_csv("files/euro_mpx_cases.csv")
+euro_mpx_cases2 <- euro_mpx_cases2 %>%
+  rename(COUNTRY_CODE = CountryCode) %>%
+  group_by(COUNTRY_CODE) %>% 
+  summarize(total_cases = sum(ConfCases))
+  
+
+demo_data <- left_join(euro_census_stats2, euro_mpx_cases2, by = "COUNTRY_CODE") %>%
+  drop_na(total_cases) %>%
+   mutate(COUNTRY_CODE = case_when(COUNTRY_CODE %in% c("AT") ~ "Austria",
+                                   COUNTRY_CODE %in% c("BE") ~ "Belgium",
+                                   COUNTRY_CODE %in% c("BG") ~ "Bulgaria",
+                                   COUNTRY_CODE %in% c("HR") ~ "Croatia",
+                                   COUNTRY_CODE %in% c("CY") ~ "Cyprus",
+                                   COUNTRY_CODE %in% c("CZ") ~ "Czechia",
+                                   COUNTRY_CODE %in% c("EE") ~ "Estonia",
+                                   COUNTRY_CODE %in% c("FI") ~ "Finland",
+                                   COUNTRY_CODE %in% c("FR") ~ "France",
+                                   COUNTRY_CODE %in% c("EL") ~ "Greece",
+                                   COUNTRY_CODE %in% c("HU") ~ "Hungary",
+                                   COUNTRY_CODE %in% c("IE") ~ "Ireland",
+                                   COUNTRY_CODE %in% c("LV") ~ "Latvia",
+                                   COUNTRY_CODE %in% c("LU") ~ "Luxembourg",
+                                   COUNTRY_CODE %in% c("MT") ~ "Malta",
+                                   COUNTRY_CODE %in% c("PL") ~ "Poland",
+                                   COUNTRY_CODE %in% c("PT") ~ "Portugal",
+                                   COUNTRY_CODE %in% c("RO") ~ "Romania",
+                                   COUNTRY_CODE %in% c("SK") ~ "Slovakia",
+                                   COUNTRY_CODE %in% c("SI") ~ "Slovenia")) %>%
+  group_by(COUNTRY_CODE, SEX, AGE, total_cases, total_pop) %>%
+  mutate('age_cat_pct' = round((age_category_count/total_pop*100),digits = 2)) %>%
+  select(COUNTRY_CODE, SEX, AGE, total_cases, total_pop, age_cat_pct) %>%
+  pivot_wider(names_from = AGE, values_from = age_cat_pct) %>%
+  group_by(COUNTRY_CODE, SEX) %>%
+  select(-c(total_pop)) %>%
+  arrange(desc(total_cases))
+
+kable(demo_data, "latex", booktabs = T,
+      col.names = c("Country",
+                    "Sex",
+                    "MPX Cases",
+                    "Age < 15 (%)",
+                    "Age 15-29 (%)",
+                    "Age 30-49 (%)",
+                    "Age 50-64 (%)",
+                    "Age 65-84 (%)",
+                    "Age 85 and Older (%)"),
+      caption = "European Countries by Sex and Age Category") %>%
+  kable_styling(latex_options = "HOLD_position")
+  
+```
 
