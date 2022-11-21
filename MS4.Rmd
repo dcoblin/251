@@ -86,11 +86,7 @@ library(stringr)
 library(readxl)
 library(kableExtra)
 library(janitor)
-<<<<<<< HEAD
 library(DT)
-=======
-
->>>>>>> 0317ae09ed2847db0e9edbd139d385fe262a3352
 ```
 
 ```{r}
@@ -321,18 +317,18 @@ kable(data_dic,
 
 
 ```{r}
-table_1.2df <- euro_mpx_cases %>% select( EU_region, "0-1000", "1000-9999", 
-                                          "10000-99999", "100000-199999", 
-                                          "200000-499999" , "500000-999999", 
-                                          "GE1000000") 
-table_1.2df1<- pivot_longer(table_1.2df, cols = 3:9, names_to = "city_pop", 
-                            values_to = "counts" )
+#table_1.2df <- euro_mpx_cases %>% select( EU_region, "0-1000", "1000-9999", 
+#                                          "10000-99999", "100000-199999", 
+#                                          "200000-499999" , "500000-999999", 
+#                                          "GE1000000") 
+#table_1.2df1<- pivot_longer(table_1.2df, cols = 3:9, names_to = "city_pop", 
+#                            values_to = "counts" )
 
 #I believe the issue is with the formation of the information below table_1.2df2 <- table_1.2df1 %>% group_by(EU_region, city_pop) %>% summarize(count = sum(counts))
 
-table_1.2 <- table_1.2df1 %>% tabyl(city_pop, EU_region)
+#table_1.2 <- table_1.2df1 %>% tabyl(city_pop, EU_region)
 
-table_1.2
+#table_1.2
 ```
 
 
@@ -464,6 +460,3 @@ kable(demo_data, "latex", booktabs = T,
   kable_styling(latex_options = "HOLD_position")
   
 ```
-
-=======
->>>>>>> 0317ae09ed2847db0e9edbd139d385fe262a3352
