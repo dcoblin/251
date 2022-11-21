@@ -332,7 +332,7 @@ euro_mpx_cases %>%
 ```
 
 ### Bar Graph
-In the bar graph above we see the breakdown of monthly Monkeypox infections in Europe between May and August of this year. The majority of cases occured in Western Europe and Southern Europe as evidenced by the respectively colored purple and green regions in the bar graph. Over the course of 4 months, the total number of Monkeypox cases by region were Western Asia = 4, Eastern Europe = 277, Northern Europe = 619, Southern Europe = 7958, and Western Europe = 8214
+In the bar graph (fig. 1) above we see the breakdown of monthly Monkeypox infections in Europe between May and August of this year. The majority of cases occured in Western Europe and Southern Europe as evidenced by the respectively colored purple and green regions in the bar graph. Over the course of 4 months, the total number of Monkeypox cases by region were Western Asia = 4, Eastern Europe = 277, Northern Europe = 619, Southern Europe = 7958, and Western Europe = 8214
 
 \newpage
 
@@ -367,5 +367,5 @@ ggplot(data=graph1, aes(x=floor_month, y=monthly_rate_region, group= EU_region))
 ```
 
 ### Line Plot
-As a follow up to the bar graph above, we wanted to look at the rate of Monkeypox infections per region. In the bar graph above, Western Europe had the greatest number of Monkeypox infections however when we look at the rate of infections, we see that over the course of the 4 months, Southern Europe had the greatest rate of infection with a peak of 2.84 monkeypox cases per 100,000 people in the month of July.
+As a follow up to the bar graph (fig. 1) above, we wanted to look at the rate of Monkeypox infections per region. In the bar graph above, Western Europe had the greatest number of Monkeypox infections however when we look at the rate of infections (fig. 2), we see that over the course of the 4 months, Southern Europe had the greatest rate of infection with a peak of 2.84 monkeypox cases per 100,000 people in the month of July.
 
