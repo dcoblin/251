@@ -446,7 +446,7 @@ demo_data <- left_join(euro_census_stats2, euro_mpx_cases2, by = "COUNTRY_CODE")
   select(-c(total_pop)) %>%
   arrange(desc(total_cases))
 
-kable(demo_data, "latex", booktabs = T,
+kable(demo_data,
       col.names = c("Country",
                     "Sex",
                     "MPX Cases",
