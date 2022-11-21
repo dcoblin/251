@@ -439,24 +439,103 @@ demo_data <- left_join(euro_census_stats2, euro_mpx_cases2, by = "COUNTRY_CODE")
                                    COUNTRY_CODE %in% c("SK") ~ "Slovakia",
                                    COUNTRY_CODE %in% c("SI") ~ "Slovenia")) %>%
   group_by(COUNTRY_CODE, SEX, AGE, total_cases, total_pop) %>%
+  filter(total_cases > 100) %>%
   mutate('age_cat_pct' = round((age_category_count/total_pop*100),digits = 2)) %>%
   select(COUNTRY_CODE, SEX, AGE, total_cases, total_pop, age_cat_pct) %>%
-  pivot_wider(names_from = AGE, values_from = age_cat_pct) %>%
-  group_by(COUNTRY_CODE, SEX) %>%
-  select(-c(total_pop)) %>%
-  arrange(desc(total_cases))
+  group_by(COUNTRY_CODE, AGE, total_cases) %>%
+  summarise(age_cat_pct = sum(age_cat_pct)) %>%
+  arrange(desc(AGE))
 
-kable(demo_data,
-      col.names = c("Country",
-                    "Sex",
-                    "MPX Cases",
-                    "Age < 15 (%)",
-                    "Age 15-29 (%)",
-                    "Age 30-49 (%)",
-                    "Age 50-64 (%)",
-                    "Age 65-84 (%)",
-                    "Age 85 and Older (%)"),
-      caption = "European Countries by Sex and Age Category") %>%
-  kable_styling(latex_options = "HOLD_position")
+demo_data %>% 
+  ggplot(., aes(x = COUNTRY_CODE, y = age_cat_pct)) +
+  geom_bar(aes(fill = AGE), stat = "identity") +
+  theme_minimal() +
+  labs(title = "Age Distribution Among Countries with Monkeypox Cases",
+       subtitle = "Countries with at least 100 confirmed cases",
+       tag = "Figure 3",
+       x = "Country", 
+       y = "Percentage") +
+  theme(axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        plot.title = element_text(size = 14),
+        legend.title = element_blank(),
+        plot.tag.position = "bottomleft")
   
 ```
+
+
+### Stacked Bargraph Age Distribution
+
+Comment
+
+```{r}
+euro_census_stats3 <- read_csv("files/euro_census_stats.csv")
+euro_census_stats3 <- euro_census_stats3 %>%
+  mutate(AGE = case_when(AGE %in% c("Y_LT15") ~ "Age < 15",
+                                  AGE %in% c("Y15-29") ~ "Age 15-29",
+                                  AGE %in% c("Y30-49") ~ "Age 30-49",
+                                  AGE %in% c("Y50-64") ~ "Age 50-64",
+                                  AGE %in% c("Y65-84") ~ "Age 65-84",
+                                  AGE %in% c("Y_GE85") ~ "Age 85 and Older")) %>%
+  filter(pop > 0) %>%
+  select(COUNTRY_CODE, SEX, AGE, pop) %>%
+  ungroup() %>%
+  group_by(COUNTRY_CODE, SEX, AGE) %>%
+  summarise("age_category_count" = sum(pop)) %>%
+  ungroup() %>%
+  group_by(COUNTRY_CODE) %>%
+  mutate(total_pop = sum(age_category_count)) %>% ungroup()
+
+demo_data2 <- left_join(euro_census_stats3, euro_mpx_cases2, by = "COUNTRY_CODE") %>%
+  drop_na(total_cases) %>%
+   mutate(COUNTRY_CODE = case_when(COUNTRY_CODE %in% c("AT") ~ "Austria",
+                                   COUNTRY_CODE %in% c("BE") ~ "Belgium",
+                                   COUNTRY_CODE %in% c("BG") ~ "Bulgaria",
+                                   COUNTRY_CODE %in% c("HR") ~ "Croatia",
+                                   COUNTRY_CODE %in% c("CY") ~ "Cyprus",
+                                   COUNTRY_CODE %in% c("CZ") ~ "Czechia",
+                                   COUNTRY_CODE %in% c("EE") ~ "Estonia",
+                                   COUNTRY_CODE %in% c("FI") ~ "Finland",
+                                   COUNTRY_CODE %in% c("FR") ~ "France",
+                                   COUNTRY_CODE %in% c("EL") ~ "Greece",
+                                   COUNTRY_CODE %in% c("HU") ~ "Hungary",
+                                   COUNTRY_CODE %in% c("IE") ~ "Ireland",
+                                   COUNTRY_CODE %in% c("LV") ~ "Latvia",
+                                   COUNTRY_CODE %in% c("LU") ~ "Luxembourg",
+                                   COUNTRY_CODE %in% c("MT") ~ "Malta",
+                                   COUNTRY_CODE %in% c("PL") ~ "Poland",
+                                   COUNTRY_CODE %in% c("PT") ~ "Portugal",
+                                   COUNTRY_CODE %in% c("RO") ~ "Romania",
+                                   COUNTRY_CODE %in% c("SK") ~ "Slovakia",
+                                   COUNTRY_CODE %in% c("SI") ~ "Slovenia")) %>%
+  group_by(COUNTRY_CODE, SEX, AGE, total_cases, total_pop) %>%
+  filter(total_cases > 100) %>%
+  mutate('age_cat_pct' = round((age_category_count/total_pop*100),digits = 2)) %>%
+  select(COUNTRY_CODE, SEX, AGE, total_cases, total_pop, age_cat_pct) %>%
+  group_by(COUNTRY_CODE, SEX) %>%
+  summarise(sex_cat_pct = sum(age_cat_pct))
+
+demo_data2 %>% 
+  ggplot(., aes(x = COUNTRY_CODE, y = sex_cat_pct)) +
+  geom_bar(aes(fill = SEX), stat = "identity") +
+  theme_minimal() +
+  labs(title = "Sex Distribution Among Countries With Confirmed Monkeypox Cases",
+       subtitle = "Countries with at least 100 confirmed cases",
+       tag = "Figure 4",
+       x = "Country", 
+       y = "Percentage") +
+  theme(axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        plot.title = element_text(size = 14),
+        legend.title = element_blank(),
+        plot.tag.position = "bottomleft")
+```
+
+
+### Stacked Bargraph Sex Distribution
+
+Comment
