@@ -352,7 +352,7 @@ kable(Table_2a,
 ```
 ## Table 4
 
-Table 4 illustrates the density within each region of the EU by the population density gathered by count for where an individual lives. 
+Table 4 illustrates the strata of individuals living within each region of the EU by the population density of that region. 
 
 \newpage
 
