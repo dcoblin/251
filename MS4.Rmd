@@ -317,10 +317,9 @@ kable(data_dic,
 ### Milestone 4: Visualizations
 
 
-```{r}
+```{r Population Density Demographic Table}
 euro_census_stats1 <- read_csv("files/euro_census_stats.csv")
 
-#pop density calc
 euro_census_stats2 <- euro_census_stats1 %>%
   group_by(COUNTRY_CODE, RES_POP) %>%
   summarise(census_pop = sum(pop)) %>%
@@ -347,8 +346,6 @@ kable(Table_2a,
                     "Southern Europe","Western Asia","Western Europe"),
       caption = "Population Demographic (Population Density) per Region") %>%
   kable_styling(latex_options = "HOLD_position")
-
-
 ```
 ## Table 4
 
@@ -356,9 +353,7 @@ Table 4 illustrates the strata of individuals living within each region of the E
 
 \newpage
 
-```{r}
-
-#Age calc
+```{r Age Demographic Table}
 euro_census_stats2b <- euro_census_stats1 %>%
   group_by(COUNTRY_CODE, AGE) %>%
   summarise(census_pop = sum(pop)) %>%
@@ -390,7 +385,7 @@ kable(Table_2b,
 
 ## Table 5
 
-Table 5 summarizes the region demographics by age using census data. We can see the age variance from region to region within the EU.
+Table 5 summarizes the region demographics by age using data that provides information by region based on age in specific brackets. 
 
 \newpage
 
@@ -412,7 +407,7 @@ euro_mpx_cases %>%
 ```
 
 ### Bar Graph
-In the bar graph (fig. 1) above we see the breakdown of monthly Monkeypox infections in Europe between May and August of this year. The majority of cases occured in Western Europe and Southern Europe as evidenced by the respectively colored purple and green regions in the bar graph. Over the course of 4 months, the total number of Monkeypox cases by region were Western Asia = 4, Eastern Europe = 277, Northern Europe = 619, Southern Europe = 7958, and Western Europe = 8214
+In the bar graph (fig. 1) above we see the breakdown of monthly MPX infections in Europe between May and August of this year. The majority of cases occurred in Western Europe and Southern Europe as evidenced by the respectively colored purple and green regions in the bar graph. Over the course of 4 months, the total number of MPX cases by region were Western Asia = 4, Eastern Europe = 277, Northern Europe = 619, Southern Europe = 7958, and Western Europe = 8214
 
 \newpage
 
@@ -445,8 +440,7 @@ ggplot(data=graph1, aes(x=floor_month, y=monthly_rate_region, group= EU_region))
 ```
 
 ### Line Plot
-As a follow up to the bar graph (fig. 1) above, we wanted to look at the rate of Monkeypox infections per region. In the bar graph above, Western Europe had the greatest number of Monkeypox infections however when we look at the rate of infections (fig. 2), we see that over the course of the 4 months, Southern Europe had the greatest rate of infection with a peak of 2.84 monkeypox cases per 100,000 people in the month of July.
-<<<<<<< HEAD
+As a follow up to the bar graph (fig. 1) above, we wanted to look at the rate of MPX infections per region. In the bar graph above, Western Europe had the greatest number of MPX infections however when we look at the rate of infections (fig. 2), we see that over the course of the 4 months, Southern Europe had the greatest rate of infection with a peak of 2.84 MPX cases per 100,000 people in the month of July.
 
 \newpage
 
@@ -527,74 +521,4 @@ demo_data %>%
 
 ### Stacked Bargraph Age Distribution
 
-Comment
-
-```{r}
-euro_census_stats3 <- read_csv("files/euro_census_stats.csv")
-euro_census_stats3 <- euro_census_stats3 %>%
-  mutate(AGE = case_when(AGE %in% c("Y_LT15") ~ "Age < 15",
-                                  AGE %in% c("Y15-29") ~ "Age 15-29",
-                                  AGE %in% c("Y30-49") ~ "Age 30-49",
-                                  AGE %in% c("Y50-64") ~ "Age 50-64",
-                                  AGE %in% c("Y65-84") ~ "Age 65-84",
-                                  AGE %in% c("Y_GE85") ~ "Age 85 and Older")) %>%
-  filter(pop > 0) %>%
-  select(COUNTRY_CODE, SEX, AGE, pop) %>%
-  ungroup() %>%
-  group_by(COUNTRY_CODE, SEX, AGE) %>%
-  summarise("age_category_count" = sum(pop)) %>%
-  ungroup() %>%
-  group_by(COUNTRY_CODE) %>%
-  mutate(total_pop = sum(age_category_count)) %>% ungroup()
-
-demo_data2 <- left_join(euro_census_stats3, euro_mpx_cases2, by = "COUNTRY_CODE") %>%
-  drop_na(total_cases) %>%
-   mutate(COUNTRY_CODE = case_when(COUNTRY_CODE %in% c("AT") ~ "Austria",
-                                   COUNTRY_CODE %in% c("BE") ~ "Belgium",
-                                   COUNTRY_CODE %in% c("BG") ~ "Bulgaria",
-                                   COUNTRY_CODE %in% c("HR") ~ "Croatia",
-                                   COUNTRY_CODE %in% c("CY") ~ "Cyprus",
-                                   COUNTRY_CODE %in% c("CZ") ~ "Czechia",
-                                   COUNTRY_CODE %in% c("EE") ~ "Estonia",
-                                   COUNTRY_CODE %in% c("FI") ~ "Finland",
-                                   COUNTRY_CODE %in% c("FR") ~ "France",
-                                   COUNTRY_CODE %in% c("EL") ~ "Greece",
-                                   COUNTRY_CODE %in% c("HU") ~ "Hungary",
-                                   COUNTRY_CODE %in% c("IE") ~ "Ireland",
-                                   COUNTRY_CODE %in% c("LV") ~ "Latvia",
-                                   COUNTRY_CODE %in% c("LU") ~ "Luxembourg",
-                                   COUNTRY_CODE %in% c("MT") ~ "Malta",
-                                   COUNTRY_CODE %in% c("PL") ~ "Poland",
-                                   COUNTRY_CODE %in% c("PT") ~ "Portugal",
-                                   COUNTRY_CODE %in% c("RO") ~ "Romania",
-                                   COUNTRY_CODE %in% c("SK") ~ "Slovakia",
-                                   COUNTRY_CODE %in% c("SI") ~ "Slovenia")) %>%
-  group_by(COUNTRY_CODE, SEX, AGE, total_cases, total_pop) %>%
-  filter(total_cases > 100) %>%
-  mutate('age_cat_pct' = round((age_category_count/total_pop*100),digits = 2)) %>%
-  select(COUNTRY_CODE, SEX, AGE, total_cases, total_pop, age_cat_pct) %>%
-  group_by(COUNTRY_CODE, SEX) %>%
-  summarise(sex_cat_pct = sum(age_cat_pct))
-
-demo_data2 %>% 
-  ggplot(., aes(x = COUNTRY_CODE, y = sex_cat_pct)) +
-  geom_bar(aes(fill = SEX), stat = "identity") +
-  theme_minimal() +
-  labs(title = "Sex Distribution Among Countries With Confirmed Monkeypox Cases",
-       subtitle = "Countries with at least 100 confirmed cases",
-       tag = "Figure 4",
-       x = "Country", 
-       y = "Percentage") +
-  theme(axis.title = element_text(size = 10),
-        axis.text = element_text(size = 8),
-        axis.ticks.x = element_blank(),
-        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-        plot.title = element_text(size = 14),
-        legend.title = element_blank(),
-        plot.tag.position = "bottomleft")
-```
-
-
-### Stacked Bargraph Sex Distribution
-
-Comment
+Figure 3 includes countries that experience at least 100 cases of MPX. The figure parameters include stacked bar graphs that visually represent the age brackets from which a positive case is observed. The 30-49 age range is observed to have more positive cases across each country than any of the other age brackets. Given the consistency within this observation, the investigators may find that countries with populations with thriving numbers of 30-49-year-old's are affected more by MPX than regions that do not. Moreover, the countries listed in this figure are predominantly within the Western Region of Europe; Western Europe includes six countries.
