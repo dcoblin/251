@@ -14,7 +14,7 @@ As the world begins to recover from the effects of COVID, the threat of the so-c
 
 # Methods
 
-To prepare this report, use data sets for the EU, explicitly including information on confirmed cases of MPX per country (euro_mpx_cases.csv) and census data (euro_census_stats.csv). The trajectory of this investigation incorporated four sets of data manipulation:
+To prepare this report our team uses data sets for the EU, explicitly including information on confirmed cases of MPX per country (euro_mpx_cases.csv) and census data (euro_census_stats.csv). The trajectory of this investigation incorporated four sets of data manipulation:
 (1) Grouping countries into regions;
 (2) Assessing necessary census information;
 (3) Compiling data sets with confirmed case demographics;
