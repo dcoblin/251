@@ -1,7 +1,7 @@
 ---
 title: "Final Report: Scenario 2 - MPX in the EU"
 author: "Dawson Coblin and Jose Lazo"
-date: '2022-11-28'
+date: '2022-12-11'
 output: pdf_document
 editor_options: 
   markdown: 
@@ -10,7 +10,7 @@ editor_options:
 
 # Problem Statement
 
-As the world begins to recover from the effects of COVID, the threat of the so-called monkeypox virus (MPX) has public health officials preparing for the worst. Throughout Europe (EU), cases of MPX have begun to rise, and it is imperative to understand the groups at the highest risk for infection. This report aims to prepare data to analyze and assess the impact of MPX within each country of the EU, understand how case rates may differ by region, and find potential links to various demographic factors. These findings will aid local health departments' implementation and appropriate response to the epidemic. Our team hypothesizes that MPX will be prevalent among young (under 30 years old) and older populations (over 64 years old), as is typical for many infectious diseases. 
+As the world begins to recover from the effects of COVID, the threat of the so-called monkeypox virus (MPX) has public health officials preparing for the worst. Throughout Europe (EU), cases of MPX have begun to rise, and it is imperative to understand the groups at the highest risk for infection. This report aims to prepare data to analyze and assess the impact of MPX within each country of the EU, understand how case rates may differ by region, and find potential links to various demographic factors. These findings will aid local health departments' implementation and appropriate response to the epidemic. Our team hypothesizes that MPX will be prevalent among young (under 30 years old) and older populations (over 64 years old), as is typical for many infectious diseases. We believe that countries with larger proportions of young and old populations will have more cases of MPX than those regions that have countries with higher middle aged population proportions. 
 
 # Methods
 
@@ -18,9 +18,10 @@ To prepare this report our team uses data sets for the EU, explicitly including 
 (1) Grouping countries into regions;
 (2) Assessing necessary census information;
 (3) Compiling data sets with confirmed case demographics;
-(4) Creating tables and figures for visual analysis.
-Countries were grouped by region based on a region's data set (world_country_regions.csv) to enhance the representation of positive cases per region. Within the euro_mpx_cases data set, relevant fields include country, country code, and confirmed cases. A curated demographic data set included information on age, sex, and the number of people per strata. 
-As an aside with the census data, we chose to initially assess any "missing" data as "NA" when paired with a country. However then decided to print information with omit-NA's to allow aggregate fields to be added together for "Table 2: Population Demographic (Population Density) per Region."
+(4) Creating tables and figures for visual analysis.   
+
+Countries were grouped by region based on a region's data set (world_country_regions.csv) to enhance the representation of positive cases per region. Within the euro_mpx_cases data set, relevant fields include country, country code, and confirmed cases. A curated demographic data set included information on age, sex, and the number of people per strata.   
+As an aside with the census data, we chose to initially assess any "missing" data as "NA" when paired with a country. However then decided to print information with omit-NA's to allow aggregate fields to be added together for review of population demographic (Population Density) per Region"
 
 ```{r packages, include=FALSE}
 library(ggplot2)
@@ -154,10 +155,9 @@ euro_mpx_cases<- euro_mpx_cases %>%
    rename( sum_region_cases = `sum(cases_grouped_monthly)`)
 
 ```
+\newpage
 
 # Results
-
-
 
 ```{r, include=FALSE}
 
@@ -168,7 +168,9 @@ Table_1.1 <- euro_mpx_cases %>% group_by(EU_region, country_pop_2022, sum_region
   group_by(EU_region, sum_region_cases) %>%
   summarize(Total_region_pop = sum(country_pop_2022))
 Countries_per_Region = c(6, 9, 7, 1, 6)
-Table_1.1 <- as.data.frame(cbind(Table_1.1, Countries_per_Region))
+Cumulative_case_rate_per_100k = c(.31, 1.65, 5.94, .44, 4.29)
+Table_1.1 <- as.data.frame(cbind(Table_1.1, Countries_per_Region , 
+                                 Cumulative_case_rate_per_100k))
 ```
 
 ```{r, echo=FALSE}
@@ -176,8 +178,9 @@ kable(Table_1.1,
       col.names = c("EU Region", 
                     "Total Cases Per Region",
                     "Total Region Population",
-                    "Countries Per Region"),
-      caption = "Monkeypox Cases Per Region"
+                    "Countries Per Region",
+                    "Case Rate per 100k"),
+      caption = "MPX Cases Per Region"
       ) %>%
   kable_styling(latex_options = "HOLD_position")
 
@@ -188,7 +191,7 @@ having unequal populations. A useful metric to create a graph will be
 the calculation of cases per 100,000. This will allow us to use one
 categorical variable (EU Region) to a quantitative variable (number of
 confirmed cases). We compiled the relevant confirmed case information per region in the
-EU.
+EU with the cumulative case rate per 100k represented in the 3rd column.
 
 
 ```{r Population Density Demographic Setup, include=FALSE}
@@ -216,16 +219,13 @@ Table_2a <- pivot_wider(euro_census_stats2a,
             values_from = pop_density_count)
 ```
 
-```{r Population Density Demographic Table, echo=FALSE}
+```{r Population Density Demographic Table, eval=FALSE, include=FALSE}
 kable(Table_2a,
       col.names = c("Population Density", "Eastern Europe", "Northern Europe",
                     "Southern Europe","Western Asia","Western Europe"),
       caption = "Population Demographic (Population Density) per Region") %>%
   kable_styling(latex_options = "HOLD_position")
 ```
-
-Table 2 illustrates the strata of individuals living within each region of the EU by the population density of that region. 
-
 
 ```{r Age Demographic Setup, include=FALSE}
 euro_census_stats2b <- euro_census_stats1 %>%
@@ -250,7 +250,7 @@ Table_2b <- pivot_wider(euro_census_stats2b,
             values_from = pop_density_count)
 ```
 
-```{r Age Demographic table, echo=FALSE}
+```{r Age Demographic table, eval=FALSE, include=FALSE}
 
 kable(Table_2b,
       col.names = c("Age Group", "Eastern Europe", "Northern Europe",
@@ -259,7 +259,6 @@ kable(Table_2b,
   kable_styling(latex_options = "HOLD_position")
 ```
 
-Table 3 summarizes the region demographics by age using data that provides information by region based on age in specific brackets. 
 
 
 ```{r, echo=FALSE}
@@ -399,9 +398,9 @@ Figure 3 includes countries that experience at least 100 cases of MPX. The figur
 
 # Discussion
 
-Our analysis of Table 1 and Figure 1 reveal the impacted regions for MPX though the study period (May through August 2022) occurred in the Southern and Western Regions of Europe. Within the EU, these two regions comprise 13 of its 29 total countries, roughly 71.8% of the total EU population (extrapolated using Table 1).
+Our analysis of Table 1 and Figure 1 reveal the impacted regions for MPX though the study period (May through August 2022) occurred in the Southern and Western Regions of Europe. Within the EU, these two regions comprise 13 of its 29 total countries, roughly 71.8% of the total EU population (extrapolated using Table 1).   
 
-Through empirical analysis in Figure 3, we are not confident of the initial hypothesis regarding younger (under 30 years old) and older (over 64 years old) populations having a higher risk of infection. We observe that the age group for 30-64-year-olds (broken into two categories of 30-49 and 50-64 years) contributes over 50% of MPX cases in countries with a minimum of 100 confirmed MPX cases (six countries from the 29 countries in the EU). Given that the 30-64 age group appears to burden more patients than those below 29 years old and above 64 years old for all six of the countries that have 100+ MPX cases, we believe that the expansion of this finding will be evident throughout the remaining 23 countries in the EU. 
+Through analysis of Figure 3, we are not confident of the initial hypothesis regarding younger (under 30 years old) and older (over 64 years old) populations proportions of country demographics causing a higher risk of infection. Review of the demographics associated to Figure 3 provide some incite as to the population age bracket proportions for those countries listed (produced over 100 confirmed cases). We observe that the age group for 30-64-year-olds (broken into two categories of 30-49 and 50-64 years) attributes to over 50 % of the population proportion for all six countries. When we reviewed the demographic characteristics associated to sex of the populations within each region, we felt that the use of age within our figure provided a better story into potential factors that are causing the occurrence of cases of MPX in Europe.  
 
 Given the analysis of this information, health department leadership should begin educational programs and outreach focusing on those 30-64 aged individuals.  
 
