@@ -10,7 +10,7 @@ editor_options:
 
 # Problem Statement
 
-As the world begins to recover from the effects of COVID, the threat of the so-called monkeypox virus (MPX) has public health officials preparing for the worst. Throughout Europe (EU), cases of MPX have begun to rise, and it is imperative to understand the groups at the highest risk for infection. This report aims to prepare data to analyze and assess the impact of MPX within each country of the EU, understand how case rates may differ by region, and find potential links to various demographic factors. These findings will aid local health departments' implementation and appropriate response to the epidemic. Our team hypothesizes that MPX will be prevalent among young (under 30 years old) and older populations (over 64 years old), as is typical for many infectious diseases; Countries with higher proportions of young and old populations will have more cases of MPX than those regions that have countries with higher middle aged population proportions. 
+As the world begins to recover from the effects of COVID, the threat of the so-called monkeypox virus (MPX) has public health officials preparing for the worst. Throughout Europe (EU), cases of MPX have begun to rise, and it is imperative to understand the groups at the highest risk for infection. This report aims to prepare data to analyze and assess the impact of MPX within each country of the EU, understand how case rates may differ by region, and find potential links to various demographic factors. These findings will aid local health departments' implementation and appropriate response to the epidemic. Our team hypothesizes that MPX will be prevalent among young (under 30 years old) and older populations (over 64 years old), as is typical for many infectious diseases. We believe that countries with larger proportions of young and old populations will have more cases of MPX than those regions that have countries with higher middle aged population proportions. 
 
 # Methods
 
@@ -21,7 +21,7 @@ To prepare this report our team uses data sets for the EU, explicitly including 
 (4) Creating tables and figures for visual analysis.  
 
 Countries were grouped by region based on a region's data set (world_country_regions.csv) to enhance the representation of positive cases per region. Within the euro_mpx_cases data set, relevant fields include country, country code, and confirmed cases. A curated demographic data set included information on age, sex, and the number of people per strata. 
-As an aside with the census data, we chose to initially assess any "missing" data as "NA" when paired with a country. However then decided to print information with omit-NA's to allow aggregate fields to be added together for "Table 2: Population Demographic (Population Density) per Region."
+As an aside with the census data, we chose to initially assess any "missing" data as "NA" when paired with a country. However then decided to print information with omit-NA's to allow aggregate fields to be added together for review of population demographic (Population Density) per Region.
 
 ```{r packages, include=FALSE}
 library(ggplot2)
