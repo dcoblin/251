@@ -10,7 +10,7 @@ editor_options:
 
 # Problem Statement
 
-As the world begins to recover from the effects of COVID, the threat of the so-called monkeypox virus (MPX) has public health officials preparing for the worst. Throughout Europe (EU), cases of MPX have begun to rise, and it is imperative to understand the groups at the highest risk for infection. This report aims to prepare data to analyze and assess the impact of MPX within each country of the EU, understand how case rates may differ by region, and find potential links to various demographic factors. These findings will aid local health departments' implementation and appropriate response to the epidemic. Our team hypothesizes that MPX will be prevalent among young (under 30 years old) and older populations (over 64 years old), as is typical for many infectious diseases. We believe that countries with larger proportions of young and old populations will have more cases of MPX than those regions that have countries with higher middle aged population proportions. 
+As the world begins to recover from the effects of COVID, the threat of the monkeypox virus (MPX) has public health officials preparing for the worst. Throughout Europe (EU), cases of MPX have begun to rise, and it is imperative to understand the groups at the highest risk for infection. This report aims to prepare data to analyze and assess the impact of MPX within each country of the EU, understand how case rates may differ by region, and find potential links to various demographic factors. These findings will aid local health departments' implementation and appropriate response to the epidemic. Our team hypothesizes that MPX will be prevalent among young (under 15 years old) and older populations (over 64 years old), as is typical for many infectious diseases. We believe that countries with larger proportions of young and old populations will have more cases of MPX than those regions that have countries with higher middle aged population proportions. 
 
 # Methods
 
@@ -20,8 +20,9 @@ To prepare this report our team uses data sets for the EU, explicitly including 
 (3) Compiling data sets with confirmed case demographics;
 (4) Creating tables and figures for visual analysis.   
 
-Countries were grouped by region based on a region's data set (world_country_regions.csv) to enhance the representation of positive cases per region. Within the euro_mpx_cases data set, relevant fields include country, country code, and confirmed cases. A curated demographic data set included information on age, sex, and the number of people per strata.   
+Countries were grouped by region based on a region's data set (world_country_regions.csv) to enhance the representation of positive cases per region. Within the euro_mpx_cases data set, relevant fields include country, country code, and confirmed cases. A curated demographic data set included information on age, sex, and the number of people per strata. For the ecologic analysis of monkeypox and age, countries with missing census data for individual age stratum were omitted from analysis.   
 As an aside with the census data, we chose to initially assess any "missing" data as "NA" when paired with a country. However then decided to print information with omit-NA's to allow aggregate fields to be added together for review of population demographic (Population Density) per Region"
+
 
 ```{r packages, include=FALSE}
 library(ggplot2)
@@ -42,7 +43,7 @@ euro_pop_denominators <- read_csv("files/euro_pop_denominators.csv")
 world_country_regions <- read_csv("files/world_country_regions.csv")
 ```
 
-```{r, include=FALSE}
+```{r, include=FALSE, message=FALSE, warning=FALSE}
 #Cleaning the cases df
 euro_mpx_cases <- euro_mpx_cases %>%
   select( DateRep, CountryExp, CountryCode  ,ConfCases)
@@ -81,7 +82,7 @@ euro_census_stats$GE1000000[euro_census_stats$GE1000000 == 0] <- NA
 
 ```
 
-```{r, include=FALSE}
+```{r, include=FALSE, message=FALSE, warning=FALSE}
 #We then assign counties with a region code in a new column a list "EU_region,"
 #and include the country name and code
 sr_northern_e<- c(
@@ -126,7 +127,7 @@ euro_mpx_cases <- euro_mpx_cases %>%
     ))
 ```
 
-```{r, include=FALSE}
+```{r, include=FALSE, message=FALSE, warning=FALSE}
 
 euro_mpx_cases <-  inner_join( euro_pop_denominators, euro_mpx_cases, 
                                 by= "CountryCode")
@@ -159,7 +160,7 @@ euro_mpx_cases<- euro_mpx_cases %>%
 
 # Results
 
-```{r, include=FALSE}
+```{r, include=FALSE, message=FALSE, warning=FALSE}
 
 Table_1.1 <- euro_mpx_cases %>% group_by(EU_region, country_pop_2022, sum_region_cases) %>%
   count(CountryCode) %>%
@@ -173,7 +174,7 @@ Table_1.1 <- as.data.frame(cbind(Table_1.1, Countries_per_Region ,
                                  Cumulative_case_rate_per_100k))
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 kable(Table_1.1,
       col.names = c("EU Region", 
                     "Total Cases Per Region",
@@ -191,7 +192,7 @@ having unequal populations. A useful metric to create a graph will be
 the calculation of cases per 100,000. This will allow us to use one
 categorical variable (EU Region) to a quantitative variable (number of
 confirmed cases). We compiled the relevant confirmed case information per region in the
-EU with the cumulative case rate per 100k represented in the 3rd column.
+EU with the cumulative case rate per 100k.
 
 
 ```{r Population Density Demographic Setup, include=FALSE}
@@ -219,7 +220,7 @@ Table_2a <- pivot_wider(euro_census_stats2a,
             values_from = pop_density_count)
 ```
 
-```{r Population Density Demographic Table, eval=FALSE, include=FALSE}
+```{r Population Density Demographic Table, eval=FALSE, include=FALSE, message=FALSE, warning=FALSE}
 kable(Table_2a,
       col.names = c("Population Density", "Eastern Europe", "Northern Europe",
                     "Southern Europe","Western Asia","Western Europe"),
@@ -227,7 +228,7 @@ kable(Table_2a,
   kable_styling(latex_options = "HOLD_position")
 ```
 
-```{r Age Demographic Setup, include=FALSE}
+```{r Age Demographic Setup, include=FALSE, message=FALSE, warning=FALSE}
 euro_census_stats2b <- euro_census_stats1 %>%
   group_by(COUNTRY_CODE, AGE) %>%
   summarise(census_pop = sum(pop)) %>%
@@ -250,7 +251,7 @@ Table_2b <- pivot_wider(euro_census_stats2b,
             values_from = pop_density_count)
 ```
 
-```{r Age Demographic table, eval=FALSE, include=FALSE}
+```{r Age Demographic table, eval=FALSE, include=FALSE, message=FALSE, warning=FALSE}
 
 kable(Table_2b,
       col.names = c("Age Group", "Eastern Europe", "Northern Europe",
@@ -261,7 +262,7 @@ kable(Table_2b,
 
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 euro_mpx_cases1.5 <- euro_mpx_cases %>%
   select(floor_month, EU_region, cases_grouped_monthly) %>%
   group_by(floor_month, EU_region) %>%
@@ -285,7 +286,7 @@ euro_mpx_cases1.5 %>%
 
 In the bar graph (Fig. 1) above we see the breakdown of monthly MPX infections in Europe between May and August of this year. The majority of cases occurred in Western Europe and Southern Europe as evidenced by the respectively colored purple and green regions in the bar graph. Over the course of 4 months, the total number of MPX cases by region were Western Asia = 4, Eastern Europe = 277, Northern Europe = 619, Southern Europe = 7958, and Western Europe = 8214
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 euro_mpx_cases <- inner_join(euro_mpx_cases, Table_1.1, by= "EU_region") %>%
   group_by(floor_month) %>%
   mutate(Total_Euro_cases_monthly = sum(cases_grouped_monthly)) %>%
@@ -316,7 +317,7 @@ ggplot(data=graph1, aes(x=floor_month, y=monthly_rate_region, group= EU_region))
 As a follow up to the bar graph (Fig. 1) above, we wanted to look at the rate of MPX infections per region. In the bar graph above, Western Europe had the greatest number of MPX infections however when we look at the rate of infections (Fig. 2), we see that over the course of the four months, Southern Europe had the greatest rate of infection with a peak of 2.84 MPX cases per 100,000 people in the month of July.
 
 
-```{r, include=FALSE}
+```{r, include=FALSE, message=FALSE, warning=FALSE}
 euro_census_stats2 <- read_csv("files/euro_census_stats.csv")
 euro_census_stats2 <- euro_census_stats2 %>%
   mutate(AGE = case_when(AGE %in% c("Y_LT15") ~ "Age < 15",
@@ -342,29 +343,77 @@ euro_mpx_cases2 <- euro_mpx_cases2 %>%
   
 
 demo_data <- left_join(euro_census_stats2, euro_mpx_cases2, by = "COUNTRY_CODE") %>%
-  drop_na(total_cases) %>%
+   drop_na(total_cases) %>%
    mutate(COUNTRY_CODE = case_when(COUNTRY_CODE %in% c("AT") ~ "Austria",
                                    COUNTRY_CODE %in% c("BE") ~ "Belgium",
                                    COUNTRY_CODE %in% c("BG") ~ "Bulgaria",
                                    COUNTRY_CODE %in% c("HR") ~ "Croatia",
                                    COUNTRY_CODE %in% c("CY") ~ "Cyprus",
                                    COUNTRY_CODE %in% c("CZ") ~ "Czechia",
+                                   COUNTRY_CODE %in% c("DK") ~ "Denmark",
                                    COUNTRY_CODE %in% c("EE") ~ "Estonia",
                                    COUNTRY_CODE %in% c("FI") ~ "Finland",
                                    COUNTRY_CODE %in% c("FR") ~ "France",
+                                   COUNTRY_CODE %in% c("DE") ~ "Germany",
                                    COUNTRY_CODE %in% c("EL") ~ "Greece",
                                    COUNTRY_CODE %in% c("HU") ~ "Hungary",
+                                   COUNTRY_CODE %in% c("IS") ~ "Iceland",
                                    COUNTRY_CODE %in% c("IE") ~ "Ireland",
+                                   COUNTRY_CODE %in% c("IT") ~ "Italy",
                                    COUNTRY_CODE %in% c("LV") ~ "Latvia",
+                                   COUNTRY_CODE %in% c("LT") ~ "Lithuania",
                                    COUNTRY_CODE %in% c("LU") ~ "Luxembourg",
                                    COUNTRY_CODE %in% c("MT") ~ "Malta",
+                                   COUNTRY_CODE %in% c("NL") ~ "Netherlands",
+                                   COUNTRY_CODE %in% c("NO") ~ "Norway",
                                    COUNTRY_CODE %in% c("PL") ~ "Poland",
                                    COUNTRY_CODE %in% c("PT") ~ "Portugal",
                                    COUNTRY_CODE %in% c("RO") ~ "Romania",
                                    COUNTRY_CODE %in% c("SK") ~ "Slovakia",
-                                   COUNTRY_CODE %in% c("SI") ~ "Slovenia")) %>%
+                                   COUNTRY_CODE %in% c("SI") ~ "Slovenia",
+                                   COUNTRY_CODE %in% c("ES") ~ "Spain",
+                                   COUNTRY_CODE %in% c("SE") ~ "Sweden")) %>%
+  group_by(COUNTRY_CODE, AGE, total_cases, total_pop) %>%
+  filter(total_cases >= 100) %>%
+  mutate('age_cat_pct' = round((age_category_count/total_pop*100),digits = 2)) %>%
+  select(COUNTRY_CODE, AGE, total_cases, total_pop, age_cat_pct) %>%
+  group_by(COUNTRY_CODE, AGE, total_cases) %>%
+  summarise(age_cat_pct = sum(age_cat_pct)) %>%
+  arrange(desc(AGE))
+
+demo_data2 <- left_join(euro_census_stats2, euro_mpx_cases2, by = "COUNTRY_CODE") %>%
+  drop_na(total_cases) %>%
+  mutate(COUNTRY_CODE = case_when(COUNTRY_CODE %in% c("AT") ~ "Austria",
+                                   COUNTRY_CODE %in% c("BE") ~ "Belgium",
+                                   COUNTRY_CODE %in% c("BG") ~ "Bulgaria",
+                                   COUNTRY_CODE %in% c("HR") ~ "Croatia",
+                                   COUNTRY_CODE %in% c("CY") ~ "Cyprus",
+                                   COUNTRY_CODE %in% c("CZ") ~ "Czechia",
+                                   COUNTRY_CODE %in% c("DK") ~ "Denmark",
+                                   COUNTRY_CODE %in% c("EE") ~ "Estonia",
+                                   COUNTRY_CODE %in% c("FI") ~ "Finland",
+                                   COUNTRY_CODE %in% c("FR") ~ "France",
+                                   COUNTRY_CODE %in% c("DE") ~ "Germany",
+                                   COUNTRY_CODE %in% c("EL") ~ "Greece",
+                                   COUNTRY_CODE %in% c("HU") ~ "Hungary",
+                                   COUNTRY_CODE %in% c("IS") ~ "Iceland",
+                                   COUNTRY_CODE %in% c("IE") ~ "Ireland",
+                                   COUNTRY_CODE %in% c("IT") ~ "Italy",
+                                   COUNTRY_CODE %in% c("LV") ~ "Latvia",
+                                   COUNTRY_CODE %in% c("LT") ~ "Lithuania",
+                                   COUNTRY_CODE %in% c("LU") ~ "Luxembourg",
+                                   COUNTRY_CODE %in% c("MT") ~ "Malta",
+                                   COUNTRY_CODE %in% c("NL") ~ "Netherlands",
+                                   COUNTRY_CODE %in% c("NO") ~ "Norway",
+                                   COUNTRY_CODE %in% c("PL") ~ "Poland",
+                                   COUNTRY_CODE %in% c("PT") ~ "Portugal",
+                                   COUNTRY_CODE %in% c("RO") ~ "Romania",
+                                   COUNTRY_CODE %in% c("SK") ~ "Slovakia",
+                                   COUNTRY_CODE %in% c("SI") ~ "Slovenia",
+                                   COUNTRY_CODE %in% c("ES") ~ "Spain",
+                                   COUNTRY_CODE %in% c("SE") ~ "Sweden")) %>%
   group_by(COUNTRY_CODE, SEX, AGE, total_cases, total_pop) %>%
-  filter(total_cases > 100) %>%
+  filter(total_cases < 100) %>%
   mutate('age_cat_pct' = round((age_category_count/total_pop*100),digits = 2)) %>%
   select(COUNTRY_CODE, SEX, AGE, total_cases, total_pop, age_cat_pct) %>%
   group_by(COUNTRY_CODE, AGE, total_cases) %>%
@@ -372,16 +421,16 @@ demo_data <- left_join(euro_census_stats2, euro_mpx_cases2, by = "COUNTRY_CODE")
   arrange(desc(AGE))
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
-demo_data %>% 
+figure_3.1 <- demo_data %>% 
   ggplot(., aes(x = COUNTRY_CODE, y = age_cat_pct)) +
   geom_bar(aes(fill = AGE), stat = "identity") +
   geom_text(aes(label= age_cat_pct), position=position_stack(vjust=0.5), size=2.5) +
   theme_minimal() +
   labs(title = "Age Distribution Among Countries with Monkeypox Cases",
        subtitle = "Countries with at least 100 confirmed cases",
-       tag = "Figure 3",
+       tag = "Figure 3A",
        x = "Country", 
        y = "Percentage") +
   theme(axis.title = element_text(size = 10),
@@ -391,16 +440,35 @@ demo_data %>%
         plot.title = element_text(size = 14),
         legend.title = element_blank(),
         plot.tag.position = "bottomleft")
-  
+figure_3.1
+
+figure_3.2 <- demo_data2 %>% 
+  ggplot(., aes(x = COUNTRY_CODE, y = age_cat_pct)) +
+  geom_bar(aes(fill = AGE), stat = "identity") +
+  geom_text(aes(label= age_cat_pct), position=position_stack(vjust=0.5), size=1.5) +
+  theme_minimal() +
+  labs(title = "Age Distribution Among Countries with Monkeypox Cases",
+       subtitle = "Countries with less than 100 confirmed cases",
+       tag = "Figure 3B",
+       x = "Country", 
+       y = "Percentage") +
+  theme(axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        plot.title = element_text(size = 14),
+        legend.title = element_blank(),
+        plot.tag.position = "bottomleft")
+figure_3.2
 ```
 
-Figure 3 includes countries that experience at least 100 cases of MPX. The figure parameters include stacked bar graphs that visually represent the age brackets from which a positive case is observed. The 30-49 age range is observed to have more positive cases across each country than any of the other age brackets. Given the consistency within this observation, the investigators may find that countries with populations with thriving numbers of 30-49-year-old's are affected more by MPX than regions that do not. Moreover, the countries listed in this figure are predominantly within the Western Region of Europe; Western Europe includes six countries.
+In our dataset, 9 countries were missing population data for age stratums which left us with 20 countries with MPX cases ranging 4 - 2889 and a median of 42. Figure 3 includes two plots dividing countries that experienced at least 100 cases of MPX with those that had less than 100 cases. The figure parameters include stacked bar graphs that visually represent the age brackets from which a positive case is observed. When comparing the two graphs, the proportion among each age stratum appear similar with the stratum of age < 15 ranging from 9.68%-14.42% and 9.12% - 12.09% in countries with >= 100 cases and countries with < 100 cases, respectively. Similar proportions were also seen for age stratum > 64. The 30-49 age range makes up the largest proportion of population among the 20 European country in which a MPX case was reported and age stratum information was available. In a seperate analyses of countries with confirmed MPX and sex (M/F), no relationship could be seen with country level sex breakdown and number of MPX cases.
 
 # Discussion
 
 Our analysis of Table 1 and Figure 1 reveal the impacted regions for MPX though the study period (May through August 2022) occurred in the Southern and Western Regions of Europe. Within the EU, these two regions comprise 13 of its 29 total countries, roughly 71.8% of the total EU population (extrapolated using Table 1).   
 
-Through analysis of Figure 3, we are not confident of the initial hypothesis regarding younger (under 30 years old) and older (over 64 years old) populations proportions of country demographics causing a higher risk of infection. Review of the demographics associated to Figure 3 provide some incite as to the population age bracket proportions for those countries listed (produced over 100 confirmed cases). We observe that the age group for 30-64-year-olds (broken into two categories of 30-49 and 50-64 years) attributes to over 50 % of the population proportion for all six countries. When we reviewed the demographic characteristics associated to sex of the populations within each region, we felt that the use of age within our figure provided a better story into potential factors that are causing the occurrence of cases of MPX in Europe.  
+Through analysis of Figure 3, we are not confident of the initial hypothesis regarding younger (under 15 years old) and older (over 64 years old) populations proportions of country demographics causing a higher risk of infection. Review of the demographics associated to Figure 3 led to an inconclusive relationship between age and MPX.
 
-Given the analysis of this information, health department leadership should begin educational programs and outreach focusing on those 30-64 aged individuals.  
+Given the analysis of this information, health department leadership should begin educational programs and outreach focusing on countries in Western and Southern Europe.
 
